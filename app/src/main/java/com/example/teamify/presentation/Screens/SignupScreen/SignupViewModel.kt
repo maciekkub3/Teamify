@@ -27,7 +27,7 @@ class SignupViewModel @Inject constructor(
 
     fun register() {
         viewModelScope.launch {
-            val result = firebaseAuth.signup(
+            firebaseAuth.signup(
                 email = state.value.email,
                 password = state.value.password
             )
