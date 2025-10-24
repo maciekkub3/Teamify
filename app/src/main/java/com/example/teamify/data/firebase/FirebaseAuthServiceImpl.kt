@@ -4,11 +4,14 @@ import com.example.teamify.data.model.exception.AuthException
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
-class FirebaseAuthServiceImpl @Inject constructor(): AuthService {
+class FirebaseAuthServiceImpl @Inject constructor(
+    private val firestore: FirebaseFirestore
+): AuthService {
 
     private val firebaseAuth = Firebase.auth
 
@@ -28,7 +31,7 @@ class FirebaseAuthServiceImpl @Inject constructor(): AuthService {
                 "createdAt" to FieldValue.serverTimestamp(),
                 "role" to "user"
             )
-            Firebase.firestore.collection("users")
+            firestore.collection("users")
                 .document(firebaseAuth.currentUser!!.uid)
                 .set(userData)
                 .await()
