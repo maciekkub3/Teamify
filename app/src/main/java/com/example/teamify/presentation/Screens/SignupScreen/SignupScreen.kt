@@ -21,7 +21,8 @@ fun SignupScreen(
     onEmailChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
     onLoginClick: () -> Unit,
-    onRegisterClick: () -> Unit
+    onRegisterClick: () -> Unit,
+    onNameChange: (String) -> Unit
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -30,6 +31,11 @@ fun SignupScreen(
             .fillMaxSize()
             .background(Color.White)
     ) {
+        OutlinedTextField(
+            value = state.name,
+            onValueChange = { onNameChange(it) },
+            label = { Text("Name") }
+        )
         OutlinedTextField(
             value = state.email,
             onValueChange = { onEmailChange(it) },
@@ -66,5 +72,6 @@ fun SignupScreenPreview() {
         onPasswordChange = {},
         onLoginClick = {},
         onRegisterClick = {},
+        onNameChange = {}
     )
 }

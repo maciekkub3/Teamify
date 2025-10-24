@@ -35,7 +35,7 @@ fun Navigation(
             LaunchedEffect(state.authState) {
                 if (state.authState == AuthState.Unauthenticated) {
                     navController.navigate(LoginRoute) {
-                        popUpTo(HomeRoute) { inclusive = true }
+                        popUpTo(LoginRoute) { inclusive = true }
                     }
                 }
             }
@@ -48,7 +48,9 @@ fun Navigation(
                 onEmailChange = { viewModel.onEmailChange(it) },
                 onPasswordChange = { viewModel.onPasswordChange(it) },
                 onLoginClick = { viewModel.login() },
-                onRegisterClick = { navController.navigate(SignupRoute) }
+                onRegisterClick = { navController.navigate(SignupRoute) {
+                    popUpTo(SignupRoute) { inclusive = true }
+                } }
             )
             LaunchedEffect(state.authState) {
                 if (state.authState == AuthState.Authenticated) {
@@ -66,7 +68,10 @@ fun Navigation(
                 onEmailChange = { viewModel.onEmailChange(it) },
                 onPasswordChange = { viewModel.onPasswordChange(it) },
                 onRegisterClick = { viewModel.register() },
-                onLoginClick = { navController.navigate(LoginRoute) }
+                onLoginClick = { navController.navigate(LoginRoute) {
+                    popUpTo(LoginRoute) { inclusive = true }
+                } },
+                onNameChange = { viewModel.onNameChange(it) }
             )
             LaunchedEffect(state.authState) {
                 if (state.authState == AuthState.Authenticated) {

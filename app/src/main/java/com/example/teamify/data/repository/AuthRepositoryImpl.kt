@@ -33,16 +33,16 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun signUp(email: String, password: String) {
-        if (email.isBlank() || password.isBlank()) {
-            _authState.value = AuthState.Error("Email and password must not be empty")
+    override suspend fun signUp(email: String, password: String, name: String) {
+        if (email.isBlank() || password.isBlank() || name.isBlank()) {
+            _authState.value = AuthState.Error("Email, name and password must not be empty")
             return
         }
 
         _authState.value = AuthState.Loading
 
         try {
-            authService.signUp(email,password)
+            authService.signUp(email,password,name)
             _authState.value = AuthState.Authenticated
         } catch (e: AuthException) {
             _authState.value = AuthState.Error(e.message)

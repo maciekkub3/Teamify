@@ -29,13 +29,15 @@ class SignupViewModel @Inject constructor(
     }
 
     fun onEmailChange(newEmail: String) { _state.update { it.copy(email = newEmail) } }
+    fun onNameChange(newName: String) { _state.update { it.copy(name = newName) } }
     fun onPasswordChange(newPassword: String) { _state.update { it.copy(password = newPassword) } }
 
     fun register() {
         viewModelScope.launch {
             authRepository.signUp(
                 email = state.value.email,
-                password = state.value.password
+                password = state.value.password,
+                name = state.value.name
             )
         }
     }

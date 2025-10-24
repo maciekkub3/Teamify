@@ -23,10 +23,11 @@ class FirebaseAuthServiceImpl @Inject constructor(
         }
     }
 
-    override suspend fun signUp(email: String, password: String) {
+    override suspend fun signUp(email: String, password: String, name: String) {
         try {
             firebaseAuth.createUserWithEmailAndPassword(email,password).await()
             val userData = mapOf(
+                "name" to name,
                 "email" to email,
                 "createdAt" to FieldValue.serverTimestamp(),
                 "role" to "user"
