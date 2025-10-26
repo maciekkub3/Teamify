@@ -7,14 +7,20 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.teamify.presentation.Screens.SignupScreen.SignupScreen
-import com.example.teamify.presentation.Screens.SignupScreen.SignupViewModel
-import com.example.teamify.presentation.Screens.loginScreen.LoginScreen
-import com.example.teamify.presentation.Screens.loginScreen.LoginViewModel
+import com.example.teamify.presentation.screens.loginScreen.LoginScreen
+import com.example.teamify.presentation.screens.loginScreen.LoginViewModel
 import androidx.compose.runtime.getValue
 import com.example.teamify.data.model.AuthState
-import com.example.teamify.presentation.Screens.homeScreen.HomeScreen
-import com.example.teamify.presentation.Screens.homeScreen.HomeViewModel
+import com.example.teamify.presentation.screens.announcementScreen.AnnouncementScreen
+import com.example.teamify.presentation.screens.announcementScreen.AnnouncementViewModel
+import com.example.teamify.presentation.screens.calendarScreen.CalendarScreen
+import com.example.teamify.presentation.screens.calendarScreen.CalendarViewModel
+import com.example.teamify.presentation.screens.chatScreen.ChatScreen
+import com.example.teamify.presentation.screens.chatScreen.ChatViewModel
+import com.example.teamify.presentation.screens.homeScreen.HomeScreen
+import com.example.teamify.presentation.screens.homeScreen.HomeViewModel
+import com.example.teamify.presentation.screens.signupScreen.SignupScreen
+import com.example.teamify.presentation.screens.signupScreen.SignupViewModel
 
 
 @Composable
@@ -30,7 +36,10 @@ fun Navigation(
             val state by viewModel.state.collectAsStateWithLifecycle()
             HomeScreen(
                 state = state,
-                onLogoutClick = { viewModel.logout() }
+                onLogoutClick = { viewModel.logout() },
+                onChatClick = { navController.navigate(ChatRoute) },
+                onCalendarClick = { navController.navigate(CalendarRoute) },
+                onAnnouncementClick = { navController.navigate(AnnouncementRoute) }
             )
             LaunchedEffect(state.authState) {
                 if (state.authState == AuthState.Unauthenticated) {
@@ -80,6 +89,27 @@ fun Navigation(
                     }
                 }
             }
+        }
+        composable<ChatRoute> {
+            val viewModel : ChatViewModel = hiltViewModel()
+            val state by viewModel.state.collectAsStateWithLifecycle()
+            ChatScreen(
+                state = state
+            )
+        }
+        composable<CalendarRoute> {
+            val viewModel : CalendarViewModel = hiltViewModel()
+            val state by viewModel.state.collectAsStateWithLifecycle()
+            CalendarScreen(
+                state = state
+            )
+        }
+        composable<AnnouncementRoute> {
+            val viewModel : AnnouncementViewModel = hiltViewModel()
+            val state by viewModel.state.collectAsStateWithLifecycle()
+            AnnouncementScreen(
+                state = state
+            )
         }
     }
 }

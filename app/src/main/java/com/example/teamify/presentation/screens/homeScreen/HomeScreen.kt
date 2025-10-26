@@ -1,7 +1,8 @@
-package com.example.teamify.presentation.Screens.homeScreen
+package com.example.teamify.presentation.screens.homeScreen
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
@@ -12,8 +13,12 @@ import androidx.compose.ui.Modifier
 @Composable
 fun HomeScreen(
     state: HomeUiState,
-    onLogoutClick: () -> Unit
-) {
+    onLogoutClick: () -> Unit,
+    onChatClick: () -> Unit,
+    onCalendarClick: () -> Unit,
+    onAnnouncementClick: () -> Unit,
+
+    ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
@@ -24,6 +29,16 @@ fun HomeScreen(
             onClick = { onLogoutClick() }
         ) {
             Text("Logout")
+        }
+
+        Row(
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Button(onClick = { onChatClick() }) { Text("Chats") }
+            Button(onClick = { onCalendarClick() }) { Text("Calendar") }
+            Button(onClick = { onAnnouncementClick() }) { Text("Announcement") }
+
         }
     }
 }

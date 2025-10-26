@@ -1,4 +1,4 @@
-package com.example.teamify.presentation.Screens.homeScreen
+package com.example.teamify.presentation.screens.homeScreen
 
 import com.example.teamify.data.model.AuthState
 

@@ -21,3 +21,18 @@ data object LoginRoute: NavRoute {
 data object SignupRoute: NavRoute {
     override val route: String = "SignupRoute"
 }
+
+@Serializable
+data object ChatRoute: NavRoute {
+    override val route: String = "ChatRoute"
+}
+
+@Serializable
+data object CalendarRoute: NavRoute {
+    override val route: String = "CalendarRoute"
+}
+
+@Serializable
+data object AnnouncementRoute: NavRoute {
+    override val route: String = "AnnouncementRoute"
+}
