@@ -1,10 +1,9 @@
-package com.example.teamify.presentation.Screens.SignupScreen
+package com.example.teamify.presentation.screens.loginScreen
 
 import com.example.teamify.data.model.AuthState
 
-data class SignupUiState(
+data class LoginUiState(
     val email: String = "",
     val password: String = "",
-    val name: String = "",
     val authState: AuthState = AuthState.Unknown
 )

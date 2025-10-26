@@ -1,4 +1,4 @@
-package com.example.teamify.presentation.Screens.loginScreen
+package com.example.teamify.presentation.screens.loginScreen
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
