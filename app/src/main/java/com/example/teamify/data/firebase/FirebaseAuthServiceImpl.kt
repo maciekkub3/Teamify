@@ -30,7 +30,7 @@ class FirebaseAuthServiceImpl @Inject constructor(
                 "name" to name,
                 "email" to email,
                 "createdAt" to FieldValue.serverTimestamp(),
-                "role" to "user"
+                "role" to "worker"
             )
             firestore.collection("users")
                 .document(firebaseAuth.currentUser!!.uid)
@@ -43,6 +43,21 @@ class FirebaseAuthServiceImpl @Inject constructor(
 
     override fun signOut() {
         firebaseAuth.signOut()
+    }
+
+    override suspend fun getCurrentUserNameAndRole(): Pair<String?, String?> {
+        val currentUser = firebaseAuth.currentUser ?: return Pair(null, null)
+        return try {
+            val document = firestore.collection("users")
+                .document(currentUser.uid)
+                .get()
+                .await()
+            val name = document.getString("name")
+            val role = document.getString("role")
+            Pair(name, role)
+        } catch (e: Exception) {
+            Pair(null, null)
+        }
     }
 }
 

@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 
+
 @Composable
 fun HomeScreen(
     state: HomeUiState,
@@ -19,12 +20,17 @@ fun HomeScreen(
     onAnnouncementClick: () -> Unit,
 
     ) {
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
         modifier = Modifier.fillMaxSize()
     ) {
-        Text("You are logged in!")
+        Text("name: ${state.user?.name}")
+        Text("email: ${state.user?.email}")
+        Text("role: ${state.user?.role}")
+
+
         Button(
             onClick = { onLogoutClick() }
         ) {

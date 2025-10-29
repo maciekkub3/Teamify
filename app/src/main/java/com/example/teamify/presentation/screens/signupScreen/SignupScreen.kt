@@ -13,11 +13,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.teamify.presentation.screens.AuthUiState
 
 
 @Composable
 fun SignupScreen(
-    state: SignupUiState,
+    state: AuthUiState,
     onEmailChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
     onLoginClick: () -> Unit,
@@ -64,7 +65,7 @@ fun SignupScreen(
 @Composable
 fun SignupScreenPreview() {
     SignupScreen(
-        state = SignupUiState(
+        state = AuthUiState(
             email = "maciek.k20001@gmail.com",
             password = "password123",
         ),

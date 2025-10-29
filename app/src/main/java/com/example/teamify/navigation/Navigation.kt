@@ -8,9 +8,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.teamify.presentation.screens.loginScreen.LoginScreen
-import com.example.teamify.presentation.screens.loginScreen.LoginViewModel
 import androidx.compose.runtime.getValue
 import com.example.teamify.data.model.AuthState
+import com.example.teamify.presentation.screens.AuthViewModel
 import com.example.teamify.presentation.screens.announcementScreen.AnnouncementScreen
 import com.example.teamify.presentation.screens.announcementScreen.AnnouncementViewModel
 import com.example.teamify.presentation.screens.calendarScreen.CalendarScreen
@@ -20,7 +20,6 @@ import com.example.teamify.presentation.screens.chatScreen.ChatViewModel
 import com.example.teamify.presentation.screens.homeScreen.HomeScreen
 import com.example.teamify.presentation.screens.homeScreen.HomeViewModel
 import com.example.teamify.presentation.screens.signupScreen.SignupScreen
-import com.example.teamify.presentation.screens.signupScreen.SignupViewModel
 
 
 @Composable
@@ -50,7 +49,7 @@ fun Navigation(
             }
         }
         composable<LoginRoute> {
-            val viewModel : LoginViewModel = hiltViewModel()
+            val viewModel : AuthViewModel = hiltViewModel()
             val state by viewModel.state.collectAsStateWithLifecycle()
             LoginScreen(
                 state = state,
@@ -62,7 +61,7 @@ fun Navigation(
                 } }
             )
             LaunchedEffect(state.authState) {
-                if (state.authState == AuthState.Authenticated) {
+                if (state.authState is AuthState.Authenticated) {
                     navController.navigate(HomeRoute) {
                         popUpTo(HomeRoute) { inclusive = true }
                     }
@@ -70,7 +69,7 @@ fun Navigation(
             }
         }
         composable<SignupRoute> {
-            val viewModel : SignupViewModel = hiltViewModel()
+            val viewModel : AuthViewModel = hiltViewModel()
             val state by viewModel.state.collectAsStateWithLifecycle()
             SignupScreen(
                 state = state,
@@ -83,7 +82,7 @@ fun Navigation(
                 onNameChange = { viewModel.onNameChange(it) }
             )
             LaunchedEffect(state.authState) {
-                if (state.authState == AuthState.Authenticated) {
+                if (state.authState is AuthState.Authenticated) {
                     navController.navigate(HomeRoute) {
                         popUpTo(HomeRoute) { inclusive = true }
                     }

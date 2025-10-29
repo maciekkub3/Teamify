@@ -1,4 +1,7 @@
 package com.example.teamify.presentation.screens.calendarScreen
 
-class CalendarUiState {
-}
+import com.example.teamify.data.model.UserRole
+
+data class CalendarUiState(
+    val userRole: UserRole? = null,
+)

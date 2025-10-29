@@ -7,3 +7,11 @@ sealed class AuthState{
     data class Error(val message: String): AuthState()
     object Unknown: AuthState()
 }
+
+enum class UserRole{ ADMIN, WORKER, }
+
+data class User(
+    val name: String,
+    val email: String,
+    val role: UserRole
+)

@@ -9,7 +9,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 
 @HiltViewModel
-class AnnouncementViewModel @Inject constructor() : ViewModel() {
+class AnnouncementViewModel @Inject constructor(
+) : ViewModel() {
 
     private val _state = MutableStateFlow(AnnouncementUiState())
     val state: StateFlow<AnnouncementUiState> = _state.asStateFlow()

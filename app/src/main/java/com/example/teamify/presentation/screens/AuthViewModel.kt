@@ -1,4 +1,4 @@
-package com.example.teamify.presentation.screens.loginScreen
+package com.example.teamify.presentation.screens
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
@@ -12,26 +12,35 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class LoginViewModel @Inject constructor(
+class AuthViewModel @Inject constructor(
     private val authRepository: AuthRepository
 ): ViewModel() {
 
-    private val _state = MutableStateFlow(LoginUiState())
-    val state: StateFlow<LoginUiState> = _state
+    private val _state = MutableStateFlow(AuthUiState())
+    val state: StateFlow<AuthUiState> = _state
 
     init {
         viewModelScope.launch {
             authRepository.streamAuthState().collect { authState ->
-                Log.d("LoginViewModel", "Auth State: $authState")
-                _state.update {
-                    it.copy(authState = authState)
-                }
+                Log.d("ViewModel", "Auth State: $authState")
+                _state.update { it.copy(authState = authState) }
             }
         }
     }
 
     fun onEmailChange(newEmail: String) { _state.update { it.copy(email = newEmail) } }
+    fun onNameChange(newName: String) { _state.update { it.copy(name = newName) } }
     fun onPasswordChange(newPassword: String) { _state.update { it.copy(password = newPassword) } }
+
+    fun register() {
+        viewModelScope.launch {
+            authRepository.signUp(
+                email = state.value.email,
+                password = state.value.password,
+                name = state.value.name
+            )
+        }
+    }
 
     fun login() {
         viewModelScope.launch {
@@ -41,4 +50,5 @@ class LoginViewModel @Inject constructor(
             )
         }
     }
+
 }
