@@ -26,6 +26,9 @@ class AuthRepositoryImpl @Inject constructor(
     override fun streamAuthState(): Flow<AuthState> = _authState.asStateFlow()
 
 
+
+
+
     override suspend fun signIn(email: String, password: String) {
         if (email.isBlank() || password.isBlank()) {
             _authState.value = AuthState.Error("Email and password must not be empty")
@@ -46,6 +49,7 @@ class AuthRepositoryImpl @Inject constructor(
 
         } catch (e: AuthException) {
             _authState.value = AuthState.Error(e.message)
+
         }
     }
 
@@ -84,5 +88,9 @@ class AuthRepositoryImpl @Inject constructor(
                 role = userRole
             )
         }.first()
+    }
+
+    override suspend fun getUserId(): String {
+        return authService.getUserId() ?: ""
     }
 }
