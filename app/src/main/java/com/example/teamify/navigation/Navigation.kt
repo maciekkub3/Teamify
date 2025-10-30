@@ -28,7 +28,7 @@ fun Navigation(
 ) {
     NavHost(
         navController = navController,
-        startDestination = LoginRoute
+        startDestination = HomeRoute
     ) {
         composable<HomeRoute> {
             val viewModel: HomeViewModel = hiltViewModel()

@@ -15,6 +15,11 @@ class FirebaseAuthServiceImpl @Inject constructor(
 
     private val firebaseAuth = Firebase.auth
 
+    override suspend fun getUserId(): String? {
+        return firebaseAuth.currentUser?.uid
+    }
+
+
     override suspend fun signIn(email: String, password: String) {
         try {
             firebaseAuth.signInWithEmailAndPassword(email,password).await()

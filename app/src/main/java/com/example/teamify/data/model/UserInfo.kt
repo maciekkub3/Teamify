@@ -27,6 +27,7 @@ class UserInfo @Inject constructor(
         preferences[NAME_KEY]
     }
 
+
     suspend fun updateUserInfo(name: String, email: String, role: String) {
         context.dataStore.edit { settings ->
             settings[ROLE_KEY] = role

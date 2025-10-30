@@ -2,10 +2,14 @@ package com.example.teamify.di.modules
 
 import android.content.Context
 import com.example.teamify.data.firebase.AuthService
+import com.example.teamify.data.firebase.ChatService
+import com.example.teamify.data.firebase.ChatServiceImpl
 import com.example.teamify.data.firebase.FirebaseAuthServiceImpl
 import com.example.teamify.data.model.UserInfo
 import com.example.teamify.data.repository.AuthRepositoryImpl
+import com.example.teamify.data.repository.ChatRepositoryImpl
 import com.example.teamify.domain.repository.AuthRepository
+import com.example.teamify.domain.repository.ChatRepository
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.firestore
@@ -23,6 +27,16 @@ object RepositoryModule {
     @Provides
     @Singleton
     fun provideAuthService(): AuthService = FirebaseAuthServiceImpl(Firebase.firestore)
+
+    @Provides
+    @Singleton
+    fun provideChatService(): ChatService = ChatServiceImpl(Firebase.firestore)
+
+    @Provides
+    @Singleton
+    fun provideChatRepository(
+        chatService: ChatService,
+    ): ChatRepository = ChatRepositoryImpl(chatService)
 
     @Provides
     @Singleton

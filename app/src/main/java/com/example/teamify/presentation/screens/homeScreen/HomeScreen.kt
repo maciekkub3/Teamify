@@ -18,7 +18,6 @@ fun HomeScreen(
     onChatClick: () -> Unit,
     onCalendarClick: () -> Unit,
     onAnnouncementClick: () -> Unit,
-
     ) {
 
     Column(
@@ -29,6 +28,7 @@ fun HomeScreen(
         Text("name: ${state.user?.name}")
         Text("email: ${state.user?.email}")
         Text("role: ${state.user?.role}")
+
 
 
         Button(
