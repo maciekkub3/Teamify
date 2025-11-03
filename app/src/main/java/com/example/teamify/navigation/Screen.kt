@@ -36,3 +36,11 @@ data object CalendarRoute: NavRoute {
 data object AnnouncementRoute: NavRoute {
     override val route: String = "AnnouncementRoute"
 }
+
+@Serializable
+data class ConversationRoute(
+    val conversationId: String,
+    val receiverId: String
+): NavRoute {
+    override val route: String = "ConversationRoute"
+}

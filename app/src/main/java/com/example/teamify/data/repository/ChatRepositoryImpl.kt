@@ -30,4 +30,8 @@ class ChatRepositoryImpl @Inject constructor(
     override suspend fun getUsers(): List<User> {
         return chatService.getUsers()
     }
+
+    override suspend fun getAvailableUsersForChat(currentUserId: String): List<User> {
+        return chatService.getAvailableUsersForChat(currentUserId)
+    }
 }

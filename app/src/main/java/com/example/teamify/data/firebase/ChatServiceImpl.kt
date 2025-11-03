@@ -117,6 +117,27 @@ class ChatServiceImpl @Inject constructor(
         }
     }
 
+    override suspend fun getAvailableUsersForChat(currentUserId: String): List<User> {
+        try {
+            val allUsers = getUsers()
+            val userChats = firestore.collection("chats")
+                .whereArrayContains("participants", currentUserId)
+                .get()
+                .await()
+
+            val chattedUserIds = userChats.documents.flatMap { chatDoc ->
+                (chatDoc.get("participants") as? List<*>).orEmpty()
+            }.filter { it != currentUserId }
+
+            val availableUsers = allUsers.filter { user ->
+                user.uid != currentUserId && user.uid !in chattedUserIds
+            }
+            return availableUsers
+        } catch (e: Exception) {
+            throw AuthException(message = e.message ?: "Failed to get available users")
+        }
+    }
+
     override suspend fun getUsers(): List<User> {
         try {
             val querySnapshot = firestore
@@ -136,5 +157,6 @@ class ChatServiceImpl @Inject constructor(
             throw AuthException(message = e.message ?: "Failed to retrieve users")
         }
     }
+
 }
 

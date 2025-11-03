@@ -17,6 +17,8 @@ import com.example.teamify.presentation.screens.calendarScreen.CalendarScreen
 import com.example.teamify.presentation.screens.calendarScreen.CalendarViewModel
 import com.example.teamify.presentation.screens.chatScreen.ChatScreen
 import com.example.teamify.presentation.screens.chatScreen.ChatViewModel
+import com.example.teamify.presentation.screens.chatScreen.ConversationScreen
+import com.example.teamify.presentation.screens.chatScreen.ConversationViewModel
 import com.example.teamify.presentation.screens.homeScreen.HomeScreen
 import com.example.teamify.presentation.screens.homeScreen.HomeViewModel
 import com.example.teamify.presentation.screens.signupScreen.SignupScreen
@@ -93,7 +95,8 @@ fun Navigation(
             val viewModel : ChatViewModel = hiltViewModel()
             val state by viewModel.state.collectAsStateWithLifecycle()
             ChatScreen(
-                state = state
+                state = state,
+                onFriendClick = { }
             )
         }
         composable<CalendarRoute> {
@@ -108,6 +111,14 @@ fun Navigation(
             val state by viewModel.state.collectAsStateWithLifecycle()
             AnnouncementScreen(
                 state = state
+            )
+        }
+        composable<ConversationRoute> { backStackEntry ->
+            val viewModel : ConversationViewModel = hiltViewModel()
+            val state by viewModel.state.collectAsStateWithLifecycle()
+            ConversationScreen(
+                state = state,
+                onMessageChange = { viewModel.onMessageChange(it) }
             )
         }
     }

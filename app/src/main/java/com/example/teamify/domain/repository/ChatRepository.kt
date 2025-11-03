@@ -10,4 +10,5 @@ interface ChatRepository {
     suspend fun createChatRoom(members: List<String>)
     suspend fun getUserChats(userId: String): List<ChatDisplay>
     suspend fun getUsers(): List<User>
+    suspend fun getAvailableUsersForChat(currentUserId: String): List<User>
 }
