@@ -1,5 +1,6 @@
 package com.example.teamify.presentation.screens.chatScreen
 
+import android.R.attr.name
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -37,19 +38,17 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.teamify.domain.model.ChatDisplay
 import com.example.teamify.domain.model.User
 import kotlinx.coroutines.launch
-
-
-
-
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChatScreen(
     state: ChatUiState,
-    onFriendClick: (String) -> Unit
+    onFriendClick: (User) -> Unit,
+    onFriendChatClick: (ChatDisplay) -> Unit
 ) {
 
     val sheetState = rememberModalBottomSheetState(
@@ -80,14 +79,14 @@ fun ChatScreen(
         LazyColumn {
             items(state.chats.size) { index ->
                 val chat = state.chats[index]
-                val name = state.chats[index].name
 
-                Text(
-                    text = name,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
+
+                ChatItemDisplay(
+                    chat = chat,
+                    onFriendChatClick = { onFriendChatClick(chat) },
+
                 )
+
             }
         }
 
@@ -105,8 +104,8 @@ fun ChatScreen(
 
                     FriendsList(
                         friends = state.friends,
-                        onFriendClick = { friend ->
-                            onFriendClick(friend.uid)
+                        onFriendClick = { user ->
+                            onFriendClick(user)
                         }
                     )
 
@@ -128,6 +127,32 @@ fun ChatScreen(
         }
 
 
+
+    }
+}
+
+@Composable
+fun ChatItemDisplay(
+    chat: ChatDisplay,
+    onFriendChatClick: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(12.dp)
+            .clickable { onFriendChatClick() }
+    ) {
+        Text(
+            text = chat.name,
+            style = MaterialTheme.typography.bodyLarge,
+            color = Color.Black
+        )
+        Spacer(modifier = Modifier.height(4.dp))
+        Text(
+            text = chat.lastMessage,
+            style = MaterialTheme.typography.bodyMedium,
+            color = Color.Gray
+        )
 
     }
 }

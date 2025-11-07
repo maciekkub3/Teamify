@@ -5,7 +5,6 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
@@ -15,8 +14,20 @@ class FirebaseAuthServiceImpl @Inject constructor(
 
     private val firebaseAuth = Firebase.auth
 
-    override suspend fun getUserId(): String? {
+    override fun getUserId(): String? {
         return firebaseAuth.currentUser?.uid
+    }
+
+    override suspend fun getUserNameBasedOnId(userId: String): String? {
+        return try {
+            val document = firestore.collection("users")
+                .document(userId)
+                .get()
+                .await()
+            document.getString("name")
+        } catch (e: Exception) {
+            null
+        }
     }
 
 

@@ -39,8 +39,8 @@ data object AnnouncementRoute: NavRoute {
 
 @Serializable
 data class ConversationRoute(
-    val conversationId: String,
-    val receiverId: String
+    val friendId: String? = null,
+    val chatId: String? = null
 ): NavRoute {
     override val route: String = "ConversationRoute"
 }

@@ -9,7 +9,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.teamify.presentation.screens.loginScreen.LoginScreen
 import androidx.compose.runtime.getValue
+import androidx.navigation.toRoute
 import com.example.teamify.data.model.AuthState
+import com.example.teamify.domain.model.User
 import com.example.teamify.presentation.screens.AuthViewModel
 import com.example.teamify.presentation.screens.announcementScreen.AnnouncementScreen
 import com.example.teamify.presentation.screens.announcementScreen.AnnouncementViewModel
@@ -51,16 +53,18 @@ fun Navigation(
             }
         }
         composable<LoginRoute> {
-            val viewModel : AuthViewModel = hiltViewModel()
+            val viewModel: AuthViewModel = hiltViewModel()
             val state by viewModel.state.collectAsStateWithLifecycle()
             LoginScreen(
                 state = state,
                 onEmailChange = { viewModel.onEmailChange(it) },
                 onPasswordChange = { viewModel.onPasswordChange(it) },
                 onLoginClick = { viewModel.login() },
-                onRegisterClick = { navController.navigate(SignupRoute) {
-                    popUpTo(SignupRoute) { inclusive = true }
-                } }
+                onRegisterClick = {
+                    navController.navigate(SignupRoute) {
+                        popUpTo(SignupRoute) { inclusive = true }
+                    }
+                }
             )
             LaunchedEffect(state.authState) {
                 if (state.authState is AuthState.Authenticated) {
@@ -71,16 +75,18 @@ fun Navigation(
             }
         }
         composable<SignupRoute> {
-            val viewModel : AuthViewModel = hiltViewModel()
+            val viewModel: AuthViewModel = hiltViewModel()
             val state by viewModel.state.collectAsStateWithLifecycle()
             SignupScreen(
                 state = state,
                 onEmailChange = { viewModel.onEmailChange(it) },
                 onPasswordChange = { viewModel.onPasswordChange(it) },
                 onRegisterClick = { viewModel.register() },
-                onLoginClick = { navController.navigate(LoginRoute) {
-                    popUpTo(LoginRoute) { inclusive = true }
-                } },
+                onLoginClick = {
+                    navController.navigate(LoginRoute) {
+                        popUpTo(LoginRoute) { inclusive = true }
+                    }
+                },
                 onNameChange = { viewModel.onNameChange(it) }
             )
             LaunchedEffect(state.authState) {
@@ -92,33 +98,47 @@ fun Navigation(
             }
         }
         composable<ChatRoute> {
-            val viewModel : ChatViewModel = hiltViewModel()
+            val viewModel: ChatViewModel = hiltViewModel()
             val state by viewModel.state.collectAsStateWithLifecycle()
+            val currentUserId = viewModel.getCurrentUserId()
             ChatScreen(
                 state = state,
-                onFriendClick = { }
+                onFriendClick = { friend ->
+                    navController.navigate(ConversationRoute(friendId = friend.uid))
+                },
+                onFriendChatClick = { chat ->
+                    navController.navigate(
+                        ConversationRoute(
+                            chatId = chat.id,
+                            friendId = chat.participants.first { it != currentUserId }
+                        ))
+                }
             )
         }
         composable<CalendarRoute> {
-            val viewModel : CalendarViewModel = hiltViewModel()
+            val viewModel: CalendarViewModel = hiltViewModel()
             val state by viewModel.state.collectAsStateWithLifecycle()
             CalendarScreen(
                 state = state
             )
         }
         composable<AnnouncementRoute> {
-            val viewModel : AnnouncementViewModel = hiltViewModel()
+            val viewModel: AnnouncementViewModel = hiltViewModel()
             val state by viewModel.state.collectAsStateWithLifecycle()
             AnnouncementScreen(
                 state = state
             )
         }
         composable<ConversationRoute> { backStackEntry ->
-            val viewModel : ConversationViewModel = hiltViewModel()
+            val route = backStackEntry.toRoute<ConversationRoute>()
+            val friendId = route.friendId ?: ""
+
+            val viewModel: ConversationViewModel = hiltViewModel()
             val state by viewModel.state.collectAsStateWithLifecycle()
             ConversationScreen(
                 state = state,
-                onMessageChange = { viewModel.onMessageChange(it) }
+                onMessageChange = { viewModel.onMessageChange(it) },
+                onSendClick = { viewModel.sendMessage(friendId) }
             )
         }
     }

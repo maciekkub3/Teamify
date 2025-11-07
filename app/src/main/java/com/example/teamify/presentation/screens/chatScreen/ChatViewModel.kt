@@ -25,15 +25,19 @@ class ChatViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             val userId = authRepository.getUserId()
-            val userChats = chatRepository.getUserChats(userId)
-            _state.update { it.copy( chats = userChats) }
+            chatRepository.getUserChats(userId).collect { chats ->
+                _state.update { it.copy(chats = chats) }
+            }
         }
         viewModelScope.launch {
             val userId = authRepository.getUserId()
             val users = chatRepository.getAvailableUsersForChat(userId)
             _state.update { it.copy( friends = users)}
         }
+    }
 
+    fun getCurrentUserId(): String {
+        return authRepository.getUserId()
     }
 
     fun onFriendToggled(userId: String) {
@@ -46,4 +50,5 @@ class ChatViewModel @Inject constructor(
             _state.update { it.copy(selectedFriends = selectedFriends) }
         }
     }
+
 }

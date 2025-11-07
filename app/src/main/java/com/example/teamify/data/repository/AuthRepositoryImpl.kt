@@ -1,6 +1,5 @@
 package com.example.teamify.data.repository
 
-import android.R.attr.name
 import com.example.teamify.data.firebase.AuthService
 import com.example.teamify.data.model.AuthState
 import com.example.teamify.data.model.User
@@ -90,7 +89,11 @@ class AuthRepositoryImpl @Inject constructor(
         }.first()
     }
 
-    override suspend fun getUserId(): String {
+    override fun getUserId(): String {
         return authService.getUserId() ?: ""
     }
+    override suspend fun getUserNameBasedOnId(userId: String): String? {
+        return authService.getUserNameBasedOnId(userId)
+    }
+
 }

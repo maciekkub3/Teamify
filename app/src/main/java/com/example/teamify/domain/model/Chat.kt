@@ -1,10 +1,12 @@
 package com.example.teamify.domain.model
 
+import com.google.firebase.Timestamp
+
 data class Chat (
     val id: String = "",
     val participants: List<String> = emptyList(),
     val lastMessage: String = "",
-    val lastMessageTimestamp: Long = 0L,
+    val lastMessageTimestamp: Timestamp? = null,
 )
 
 data class Message(
@@ -12,7 +14,7 @@ data class Message(
     val chatId: String = "",
     val senderId: String = "",
     val content: String = "",
-    val timestamp: Long = 0L,
+    val timestamp: Timestamp? = null,
     val type: MessageType = MessageType.TEXT
 )
 

@@ -1,11 +1,12 @@
 package com.example.teamify.data.repository
 
 import com.example.teamify.data.firebase.ChatService
-import com.example.teamify.domain.model.Chat
 import com.example.teamify.domain.model.ChatDisplay
+import com.example.teamify.domain.model.Message
 import com.example.teamify.domain.model.User
 import com.example.teamify.domain.repository.ChatRepository
 import jakarta.inject.Inject
+import kotlinx.coroutines.flow.Flow
 
 class ChatRepositoryImpl @Inject constructor(
     private val chatService: ChatService
@@ -19,11 +20,11 @@ class ChatRepositoryImpl @Inject constructor(
         chatService.deleteMessage(chatId, messageId)
     }
 
-    override suspend fun createChatRoom(members: List<String>) {
-        chatService.createChatRoom(members)
+    override suspend fun createChatRoom(members: List<String>): String {
+        return chatService.createChatRoom(members)
     }
 
-    override suspend fun getUserChats(userId: String): List<ChatDisplay> {
+    override fun getUserChats(userId: String): Flow<List<ChatDisplay>> {
         return chatService.getUserChats(userId)
     }
 
@@ -33,5 +34,13 @@ class ChatRepositoryImpl @Inject constructor(
 
     override suspend fun getAvailableUsersForChat(currentUserId: String): List<User> {
         return chatService.getAvailableUsersForChat(currentUserId)
+    }
+
+    override suspend fun chatExists(chatId: String): Boolean {
+        return chatService.chatExists(chatId)
+    }
+
+    override suspend fun getMessages(chatId: String): Flow<List<Message>> {
+        return chatService.getMessages(chatId)
     }
 }

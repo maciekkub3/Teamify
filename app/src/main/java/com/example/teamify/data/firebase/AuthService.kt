@@ -5,6 +5,7 @@ interface AuthService {
     suspend fun signUp(email: String, password: String, name: String)
     fun signOut()
     suspend fun getCurrentUserNameAndRole(): Pair<String?, String?>
-    suspend fun getUserId(): String?
+    fun getUserId(): String?
+    suspend fun getUserNameBasedOnId(userId: String): String?
 
 }
