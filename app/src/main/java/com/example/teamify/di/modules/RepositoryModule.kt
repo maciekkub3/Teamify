@@ -6,8 +6,10 @@ import com.example.teamify.data.firebase.ChatService
 import com.example.teamify.data.firebase.ChatServiceImpl
 import com.example.teamify.data.firebase.FirebaseAuthServiceImpl
 import com.example.teamify.data.model.UserInfo
+import com.example.teamify.data.repository.AnnouncementRepositoryImpl
 import com.example.teamify.data.repository.AuthRepositoryImpl
 import com.example.teamify.data.repository.ChatRepositoryImpl
+import com.example.teamify.domain.repository.AnnouncementRepository
 import com.example.teamify.domain.repository.AuthRepository
 import com.example.teamify.domain.repository.ChatRepository
 import com.google.firebase.Firebase
@@ -54,4 +56,8 @@ object RepositoryModule {
     fun provideUserRole(@ApplicationContext context: Context): UserInfo {
         return UserInfo(context)
     }
+
+    @Provides
+    @Singleton
+    fun provideAnnouncementRepository(): AnnouncementRepository = AnnouncementRepositoryImpl(Firebase.firestore)
 }

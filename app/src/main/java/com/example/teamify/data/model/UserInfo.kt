@@ -16,7 +16,6 @@ private val Context.dataStore by preferencesDataStore("user_info")
 class UserInfo @Inject constructor(
     private val context: Context
 ) {
-
     val role = context.dataStore.data.map { preferences ->
         preferences[ROLE_KEY]
     }
@@ -26,7 +25,6 @@ class UserInfo @Inject constructor(
     val name = context.dataStore.data.map { preferences ->
         preferences[NAME_KEY]
     }
-
 
     suspend fun updateUserInfo(name: String, email: String, role: String) {
         context.dataStore.edit { settings ->

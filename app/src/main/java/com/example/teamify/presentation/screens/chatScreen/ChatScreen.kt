@@ -1,6 +1,5 @@
 package com.example.teamify.presentation.screens.chatScreen
 
-import android.R.attr.name
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -79,12 +78,9 @@ fun ChatScreen(
         LazyColumn {
             items(state.chats.size) { index ->
                 val chat = state.chats[index]
-
-
                 ChatItemDisplay(
                     chat = chat,
                     onFriendChatClick = { onFriendChatClick(chat) },
-
                 )
 
             }

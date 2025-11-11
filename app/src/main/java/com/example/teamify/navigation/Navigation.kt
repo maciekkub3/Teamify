@@ -11,7 +11,6 @@ import com.example.teamify.presentation.screens.loginScreen.LoginScreen
 import androidx.compose.runtime.getValue
 import androidx.navigation.toRoute
 import com.example.teamify.data.model.AuthState
-import com.example.teamify.domain.model.User
 import com.example.teamify.presentation.screens.AuthViewModel
 import com.example.teamify.presentation.screens.announcementScreen.AnnouncementScreen
 import com.example.teamify.presentation.screens.announcementScreen.AnnouncementViewModel
@@ -32,7 +31,7 @@ fun Navigation(
 ) {
     NavHost(
         navController = navController,
-        startDestination = HomeRoute
+        startDestination = LoginRoute
     ) {
         composable<HomeRoute> {
             val viewModel: HomeViewModel = hiltViewModel()
@@ -126,7 +125,10 @@ fun Navigation(
             val viewModel: AnnouncementViewModel = hiltViewModel()
             val state by viewModel.state.collectAsStateWithLifecycle()
             AnnouncementScreen(
-                state = state
+                state = state,
+                onAddAnnouncement = { title, content ->
+                    viewModel.addAnnouncement(title, content)
+                },
             )
         }
         composable<ConversationRoute> { backStackEntry ->
@@ -143,4 +145,3 @@ fun Navigation(
         }
     }
 }
-

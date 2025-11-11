@@ -1,4 +1,11 @@
 package com.example.teamify.presentation.screens.announcementScreen
 
-class AnnouncementUiState {
-}
+import com.example.teamify.data.model.UserRole
+import com.example.teamify.domain.model.Announcement
+
+data class AnnouncementUiState(
+    val announcements: List<Announcement> = emptyList(),
+    val userRole: UserRole = UserRole.WORKER,
+    val isLoading: Boolean = false,
+    val errorMessage: String? = null
+)

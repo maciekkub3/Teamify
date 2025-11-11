@@ -12,6 +12,4 @@ interface AuthRepository {
     suspend fun getUser(): User
     fun getUserId(): String
     suspend fun getUserNameBasedOnId(userId: String): String?
-
-
 }
