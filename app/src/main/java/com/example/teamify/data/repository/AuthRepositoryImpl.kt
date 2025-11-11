@@ -19,23 +19,16 @@ class AuthRepositoryImpl @Inject constructor(
     private val userInfo: UserInfo
 ) : AuthRepository {
 
-
     private val _authState = MutableStateFlow<AuthState>(AuthState.Unknown)
 
     override fun streamAuthState(): Flow<AuthState> = _authState.asStateFlow()
-
-
-
-
 
     override suspend fun signIn(email: String, password: String) {
         if (email.isBlank() || password.isBlank()) {
             _authState.value = AuthState.Error("Email and password must not be empty")
             return
         }
-
         _authState.value = AuthState.Loading
-
         try {
             authService.signIn(email, password)
             val uid = authService.getUserId() ?: throw AuthException("User ID not found after sign-in")
@@ -46,7 +39,6 @@ class AuthRepositoryImpl @Inject constructor(
                 role = user.role.name.lowercase(),
                 name = user.name.toString()
             )
-
         } catch (e: AuthException) {
             _authState.value = AuthState.Error(e.message)
 
@@ -58,9 +50,7 @@ class AuthRepositoryImpl @Inject constructor(
             _authState.value = AuthState.Error("Email, name and password must not be empty")
             return
         }
-
         _authState.value = AuthState.Loading
-
         try {
             authService.signUp(email, password, name)
             _authState.value = AuthState.Authenticated
@@ -96,5 +86,4 @@ class AuthRepositoryImpl @Inject constructor(
     override suspend fun getUserNameBasedOnId(userId: String): String? {
         return authService.getUserNameBasedOnId(userId)
     }
-
 }

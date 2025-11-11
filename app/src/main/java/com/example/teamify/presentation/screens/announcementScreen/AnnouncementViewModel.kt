@@ -21,13 +21,11 @@ class AnnouncementViewModel @Inject constructor(
     private val _state = MutableStateFlow(AnnouncementUiState())
     val state: StateFlow<AnnouncementUiState> = _state.asStateFlow()
 
-
     init {
         viewModelScope.launch {
             _state.update {
                 it.copy(userRole = authRepository.getUser().role)
             }
-
             announcementRepository.getAnnouncements().collect { announcements ->
                 _state.update {
                     it.copy(announcements = announcements)
@@ -47,6 +45,4 @@ class AnnouncementViewModel @Inject constructor(
             announcementRepository.deleteAnnouncement(announcementId)
         }
     }
-
-
 }

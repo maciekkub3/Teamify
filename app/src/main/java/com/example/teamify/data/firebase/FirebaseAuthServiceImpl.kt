@@ -28,7 +28,7 @@ class FirebaseAuthServiceImpl @Inject constructor(
                 .await()
             document.getString("name")
         } catch (e: Exception) {
-            null
+            return e.toString()
         }
     }
 
@@ -50,7 +50,6 @@ class FirebaseAuthServiceImpl @Inject constructor(
             throw AuthException(message = e.message ?: "Failed to fetch user data")
         }
     }
-
 
     override suspend fun signIn(email: String, password: String) {
         try {
@@ -77,10 +76,7 @@ class FirebaseAuthServiceImpl @Inject constructor(
             throw AuthException(message = e.message ?: "Authentication failed")
         }
     }
-
     override fun signOut() {
         firebaseAuth.signOut()
     }
-
 }
-

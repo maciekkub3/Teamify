@@ -11,7 +11,6 @@ import com.example.teamify.presentation.screens.loginScreen.LoginScreen
 import androidx.compose.runtime.getValue
 import androidx.navigation.toRoute
 import com.example.teamify.data.model.AuthState
-import com.example.teamify.domain.model.User
 import com.example.teamify.presentation.screens.AuthViewModel
 import com.example.teamify.presentation.screens.announcementScreen.AnnouncementScreen
 import com.example.teamify.presentation.screens.announcementScreen.AnnouncementViewModel
@@ -146,4 +145,3 @@ fun Navigation(
         }
     }
 }
-

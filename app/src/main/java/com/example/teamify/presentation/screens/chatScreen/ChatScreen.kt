@@ -1,6 +1,5 @@
 package com.example.teamify.presentation.screens.chatScreen
 
-import android.R.attr.name
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

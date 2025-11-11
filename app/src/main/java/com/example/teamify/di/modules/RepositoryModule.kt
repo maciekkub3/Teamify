@@ -60,6 +60,4 @@ object RepositoryModule {
     @Provides
     @Singleton
     fun provideAnnouncementRepository(): AnnouncementRepository = AnnouncementRepositoryImpl(Firebase.firestore)
-
-
 }

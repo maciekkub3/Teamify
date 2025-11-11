@@ -1,6 +1,5 @@
 package com.example.teamify.presentation.screens.announcementScreen
 
-import com.example.teamify.data.model.User
 import com.example.teamify.data.model.UserRole
 import com.example.teamify.domain.model.Announcement
 

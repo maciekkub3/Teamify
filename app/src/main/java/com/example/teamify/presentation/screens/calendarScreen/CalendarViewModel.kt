@@ -28,8 +28,4 @@ class CalendarViewModel @Inject constructor(
             }
         }
     }
-
-
-
-
 }
