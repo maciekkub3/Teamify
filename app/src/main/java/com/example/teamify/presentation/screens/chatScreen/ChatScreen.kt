@@ -79,12 +79,9 @@ fun ChatScreen(
         LazyColumn {
             items(state.chats.size) { index ->
                 val chat = state.chats[index]
-
-
                 ChatItemDisplay(
                     chat = chat,
                     onFriendChatClick = { onFriendChatClick(chat) },
-
                 )
 
             }

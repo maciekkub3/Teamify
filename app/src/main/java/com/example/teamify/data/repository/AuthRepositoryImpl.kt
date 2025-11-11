@@ -38,12 +38,13 @@ class AuthRepositoryImpl @Inject constructor(
 
         try {
             authService.signIn(email, password)
-            val (name, roleString) = authService.getCurrentUserNameAndRole()
+            val uid = authService.getUserId() ?: throw AuthException("User ID not found after sign-in")
+            val user = authService.getUserFromFirestore(uid)
             _authState.value = AuthState.Authenticated
             userInfo.updateUserInfo(
                 email = email,
-                role = roleString.toString(),
-                name = name.toString()
+                role = user.role.name.lowercase(),
+                name = user.name.toString()
             )
 
         } catch (e: AuthException) {

@@ -8,6 +8,7 @@ import com.example.teamify.domain.model.ChatDisplay
 import com.example.teamify.domain.model.Message
 import com.example.teamify.domain.model.User
 import com.google.firebase.Timestamp
+import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.channels.awaitClose
@@ -94,17 +95,17 @@ class ChatServiceImpl @Inject constructor(
             .document(chatId)
             .collection("messages")
             .orderBy("timestamp")
-            .addSnapshotListener { querySnapshot, error ->
+            .addSnapshotListener { snapshot, error ->
                 if (error != null) {
                     close(error)
                     return@addSnapshotListener
                 }
-                val messages = querySnapshot?.documents?.map { document ->
+                val messages = snapshot?.documents?.map { doc ->
                     Message(
-                        id = document.id,
-                        senderId = document.getString("senderId") ?: "",
-                        content = document.getString("message") ?: "",
-                        timestamp = document.getTimestamp("timestamp")
+                        id = doc.id,
+                        senderId = doc.getString("senderId") ?: "",
+                        content = doc.getString("message") ?: "",
+                        timestamp = doc.getTimestamp("timestamp")
                     )
                 } ?: emptyList()
                 trySend(messages)
@@ -129,17 +130,25 @@ class ChatServiceImpl @Inject constructor(
                             chatDoc.toObject(Chat::class.java)?.copy(id = chatDoc.id)
                         } ?: emptyList()
 
-                        val chatDisplays = chats.map { chat ->
-                            val otherUserIds = chat.participants.filter { it != userId }
+                        val allOtherUserIds = chats.flatMap { it.participants }.filter { it != userId }.distinct()
 
-                            val otherUsers = otherUserIds.mapNotNull { uid ->
-                                val doc = firestore.collection("users").document(uid).get().await()
-                                doc.getString("name")
-                            }
+                        val userDocs = firestore.collection("users")
+                            .whereIn(FieldPath.documentId(), allOtherUserIds)
+                            .get().await()
+
+                        val userMap = userDocs.documents.associateBy(
+                            { it.id },
+                            { it.getString("name") ?: "Unknown" }
+                        )
+
+                        val chatDisplays = chats.map { chat ->
+                            val otherNames = chat.participants
+                                .filter { it != userId }
+                                .map { uid -> userMap[uid] ?: "Unknown" }
 
                             ChatDisplay(
                                 id = chat.id,
-                                name = otherUsers.joinToString(", "),
+                                name = otherNames.joinToString(", "),
                                 lastMessage = chat.lastMessage,
                                 lastMessageTimestamp = chat.lastMessageTimestamp,
                                 participants = chat.participants

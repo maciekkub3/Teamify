@@ -1,5 +1,7 @@
 package com.example.teamify.data.firebase
 
+import com.example.teamify.data.model.User
+import com.example.teamify.data.model.UserRole
 import com.example.teamify.data.model.exception.AuthException
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
@@ -27,6 +29,25 @@ class FirebaseAuthServiceImpl @Inject constructor(
             document.getString("name")
         } catch (e: Exception) {
             null
+        }
+    }
+
+    override suspend fun getUserFromFirestore(userId: String): User {
+        return try {
+            val document = firestore.collection("users")
+                .document(userId)
+                .get()
+                .await()
+            val name = document.getString("name") ?: ""
+            val email = document.getString("email") ?: ""
+            val role = document.getString("role") ?: ""
+            User(
+                name = name,
+                email = email,
+                role = UserRole.valueOf(role.uppercase())
+            )
+        } catch (e: Exception) {
+            throw AuthException(message = e.message ?: "Failed to fetch user data")
         }
     }
 
@@ -61,19 +82,5 @@ class FirebaseAuthServiceImpl @Inject constructor(
         firebaseAuth.signOut()
     }
 
-    override suspend fun getCurrentUserNameAndRole(): Pair<String?, String?> {
-        val currentUser = firebaseAuth.currentUser ?: return Pair(null, null)
-        return try {
-            val document = firestore.collection("users")
-                .document(currentUser.uid)
-                .get()
-                .await()
-            val name = document.getString("name")
-            val role = document.getString("role")
-            Pair(name, role)
-        } catch (e: Exception) {
-            Pair(null, null)
-        }
-    }
 }
 
