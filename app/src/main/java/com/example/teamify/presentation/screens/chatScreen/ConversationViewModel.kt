@@ -1,12 +1,8 @@
 package com.example.teamify.presentation.screens.chatScreen
 
-import android.R.id.message
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.teamify.domain.model.Message
-import com.example.teamify.domain.model.User
 import com.example.teamify.domain.repository.AuthRepository
 import com.example.teamify.domain.repository.ChatRepository
 import com.example.teamify.domain.repository.FriendsRepository

@@ -1,7 +1,5 @@
 package com.example.teamify.presentation.screens.chatScreen
 
-import com.example.teamify.domain.model.Message
-import com.example.teamify.domain.model.User
 import com.google.firebase.Timestamp
 
 data class ConversationUiState(

@@ -22,7 +22,6 @@ import com.example.teamify.ui.theme.AppTheme
 import dagger.hilt.android.AndroidEntryPoint
 import androidx.compose.runtime.getValue
 import androidx.core.view.WindowCompat
-import com.example.teamify.bottomNavRoutes
 import com.example.teamify.presentation.common.BottomNavigationBar
 
 val bottomNavRoutes = listOf(
