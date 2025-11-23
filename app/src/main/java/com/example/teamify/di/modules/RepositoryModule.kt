@@ -9,9 +9,11 @@ import com.example.teamify.data.model.UserInfo
 import com.example.teamify.data.repository.AnnouncementRepositoryImpl
 import com.example.teamify.data.repository.AuthRepositoryImpl
 import com.example.teamify.data.repository.ChatRepositoryImpl
+import com.example.teamify.data.repository.FriendsRepositoryImpl
 import com.example.teamify.domain.repository.AnnouncementRepository
 import com.example.teamify.domain.repository.AuthRepository
 import com.example.teamify.domain.repository.ChatRepository
+import com.example.teamify.domain.repository.FriendsRepository
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.firestore
@@ -60,4 +62,8 @@ object RepositoryModule {
     @Provides
     @Singleton
     fun provideAnnouncementRepository(): AnnouncementRepository = AnnouncementRepositoryImpl(Firebase.firestore)
+
+    @Provides
+    @Singleton
+    fun provideFriendsRepository(): FriendsRepository = FriendsRepositoryImpl(Firebase.firestore)
 }

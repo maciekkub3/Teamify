@@ -3,16 +3,26 @@ package com.example.teamify.presentation.screens.signupScreen
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Password
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.example.teamify.presentation.screens.AuthUiState
 
 
@@ -30,32 +40,57 @@ fun SignupScreen(
         verticalArrangement = Arrangement.Center,
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
     ) {
-        OutlinedTextField(
+        TextField(
             value = state.name,
             onValueChange = { onNameChange(it) },
-            label = { Text("Name") }
+            label = { Text("Name") },
+            leadingIcon = { Icon(
+                Icons.Default.Person,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary
+            ) },
+            singleLine = true,
+            shape = MaterialTheme.shapes.small
         )
-        OutlinedTextField(
+        Spacer(modifier = Modifier.height(5.dp))
+        TextField(
             value = state.email,
             onValueChange = { onEmailChange(it) },
-            label = { Text("Email") }
+            label = { Text("Email") },
+            leadingIcon = { Icon(
+                Icons.Default.Email,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary
+            ) },
+            singleLine = true,
+            shape = MaterialTheme.shapes.small
         )
-        OutlinedTextField(
+        Spacer(modifier = Modifier.height(5.dp))
+        TextField(
             value = state.password,
             onValueChange = { onPasswordChange(it) },
-            label = { Text("Password") }
+            label = { Text("Password") },
+            leadingIcon = { Icon(
+                Icons.Default.Password,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary
+            )},
+            singleLine = true,
+            shape = MaterialTheme.shapes.small
         )
+
+        Spacer(modifier = Modifier.height(10.dp))
+
         Button(
             onClick = { onRegisterClick() }
         ) {
-            Text("Login")
+            Text("Sign Up")
         }
         TextButton(
             onClick = { onLoginClick() }
         ) {
-            Text("Already have an account? Login")
+            Text("Don't have an account? Login")
         }
 
     }

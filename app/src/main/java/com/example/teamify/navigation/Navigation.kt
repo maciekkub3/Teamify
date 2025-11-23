@@ -31,7 +31,7 @@ fun Navigation(
 ) {
     NavHost(
         navController = navController,
-        startDestination = LoginRoute
+        startDestination = HomeRoute
     ) {
         composable<HomeRoute> {
             val viewModel: HomeViewModel = hiltViewModel()
@@ -111,7 +111,8 @@ fun Navigation(
                             chatId = chat.id,
                             friendId = chat.participants.first { it != currentUserId }
                         ))
-                }
+                },
+                onBackClick = { navController.popBackStack() }
             )
         }
         composable<CalendarRoute> {
@@ -129,6 +130,7 @@ fun Navigation(
                 onAddAnnouncement = { title, content ->
                     viewModel.addAnnouncement(title, content)
                 },
+                onBackClick = { navController.popBackStack() }
             )
         }
         composable<ConversationRoute> { backStackEntry ->

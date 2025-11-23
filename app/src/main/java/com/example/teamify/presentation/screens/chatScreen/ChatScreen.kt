@@ -1,5 +1,6 @@
 package com.example.teamify.presentation.screens.chatScreen
 
+import android.content.res.Configuration
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -8,7 +9,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -21,8 +21,12 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SearchBar
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -35,10 +39,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.teamify.domain.model.ChatDisplay
 import com.example.teamify.domain.model.User
+import com.example.teamify.presentation.common.TopBar
+import com.example.teamify.ui.theme.AppTheme
 import kotlinx.coroutines.launch
 
 
@@ -47,7 +55,8 @@ import kotlinx.coroutines.launch
 fun ChatScreen(
     state: ChatUiState,
     onFriendClick: (User) -> Unit,
-    onFriendChatClick: (ChatDisplay) -> Unit
+    onFriendChatClick: (ChatDisplay) -> Unit,
+    onBackClick: () -> Unit = { }
 ) {
 
     val sheetState = rememberModalBottomSheetState(
@@ -56,74 +65,70 @@ fun ChatScreen(
     val scope = rememberCoroutineScope()
     var showBottomSheet by remember { mutableStateOf(false) }
 
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-        modifier = Modifier.fillMaxSize()
-    ) {
-        Text("Chat Screen")
-
-        Spacer(modifier = Modifier.height(100.dp))
-
-        Button(
-            onClick = {
-                showBottomSheet = true
-            }
-        ) {
-            Text("Add new chat")
-        }
-
-        Text("Chats :")
-        Spacer(modifier = Modifier.height(20.dp))
-        LazyColumn {
-            items(state.chats.size) { index ->
-                val chat = state.chats[index]
-                ChatItemDisplay(
-                    chat = chat,
-                    onFriendChatClick = { onFriendChatClick(chat) },
-                )
-
-            }
-        }
-
-        if(showBottomSheet) {
-            ModalBottomSheet(
-                onDismissRequest = { showBottomSheet = false },
-                sheetState = sheetState,
+    Scaffold(
+        topBar = {
+            TopBar(title = "Chats", onBackClick = { onBackClick() })
+        },
+        bottomBar = {
+            Button(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(12.dp),
+                onClick = {
+                    showBottomSheet = true
+                }
             ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                ) {
+                Text("Add new chat")
+            }
+        },
+    ) { innerPadding ->
+        Box(modifier = Modifier.padding(innerPadding)) {
+            Column {
+                LazyColumn {
+                    items(state.chats.size) { index ->
+                        val chat = state.chats[index]
+                        ChatItemDisplay(
+                            chat = chat,
+                            onFriendChatClick = { onFriendChatClick(chat) },
+                        )
+                    }
+                }
 
-                    FriendsList(
-                        friends = state.friends,
-                        onFriendClick = { user ->
-                            onFriendClick(user)
-                        }
-                    )
+                if (showBottomSheet) {
+                    ModalBottomSheet(
+                        onDismissRequest = { showBottomSheet = false },
+                        sheetState = sheetState,
+                    ) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                        ) {
 
-
-
-                    Button(
-                        onClick = {
-                            scope.launch { sheetState.hide() }.invokeOnCompletion {
-                                if (!sheetState.isVisible) {
-                                    showBottomSheet = false
+                            FriendsList(
+                                friends = state.friends,
+                                onFriendClick = { user ->
+                                    onFriendClick(user)
                                 }
+                            )
+
+                            Button(
+                                onClick = {
+                                    scope.launch { sheetState.hide() }.invokeOnCompletion {
+                                        if (!sheetState.isVisible) {
+                                            showBottomSheet = false
+                                        }
+                                    }
+                                }
+                            ) {
+                                Text("Close")
                             }
                         }
-                    ) {
-                        Text("Close")
                     }
                 }
             }
         }
-
-
-
     }
 }
 
@@ -132,25 +137,49 @@ fun ChatItemDisplay(
     chat: ChatDisplay,
     onFriendChatClick: () -> Unit
 ) {
-    Column(
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center,
         modifier = Modifier
-            .fillMaxWidth()
             .padding(12.dp)
-            .clickable { onFriendChatClick() }
     ) {
-        Text(
-            text = chat.name,
-            style = MaterialTheme.typography.bodyLarge,
-            color = Color.Black
-        )
-        Spacer(modifier = Modifier.height(4.dp))
-        Text(
-            text = chat.lastMessage,
-            style = MaterialTheme.typography.bodyMedium,
-            color = Color.Gray
-        )
+        Box(
+            modifier = Modifier
+                .size(40.dp)
+                .clip(CircleShape)
+                .background(Color.Gray),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = chat.name.first().toString().toUpperCase(),
+                color = Color.White,
+                style = MaterialTheme.typography.bodyMedium
+            )
+        }
 
+        Spacer(modifier = Modifier.width(12.dp))
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { onFriendChatClick() }
+        ) {
+            Text(
+                text = chat.name,
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Bold
+            )
+            Text(
+                text = chat.lastMessage,
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.Gray,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+
+        }
     }
+
 }
 
 @Composable
@@ -192,44 +221,32 @@ fun FriendsList(
 
 @Composable
 fun FriendItem(
-    friend : User,
+    friend: User,
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
-    val backgroundColor = if (isSelected) Color(0xFFE0F7FA) else Color.White
-    val borderColor = if (isSelected) Color(0xFF00838F) else Color.LightGray
 
-    Card(
+    Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 12.dp, vertical = 6.dp)
             .clickable(onClick = onClick),
-        shape = RoundedCornerShape(12.dp),
-        border = BorderStroke(1.dp, borderColor),
-        colors = CardDefaults.cardColors(containerColor = backgroundColor),
-        elevation = CardDefaults.cardElevation(if (isSelected) 8.dp else 2.dp)
     ) {
-        Column(
-            modifier = Modifier.padding(horizontal = 12.dp)
+        Row(
+            modifier = Modifier.padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
+            Box(
                 modifier = Modifier
-                    .padding(12.dp)
+                    .size(40.dp)
+                    .clip(CircleShape)
+                    .background(Color.Gray),
+                contentAlignment = Alignment.Center
             ) {
-                Box(
-                    modifier = Modifier
-                        .size(40.dp)
-                        .clip(CircleShape)
-                        .background(Color.Gray),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = friend.name.first().toString(),
-                        color = Color.White,
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                }
+                Text(
+                    text = friend.name.first().toString(),
+                    color = Color.White,
+                    style = MaterialTheme.typography.bodyMedium
+                )
             }
 
             Spacer(modifier = Modifier.width(12.dp))
@@ -237,21 +254,120 @@ fun FriendItem(
             Text(
                 text = friend.name,
                 style = MaterialTheme.typography.bodyLarge,
-                color = if (isSelected) Color(0xFF00838F) else Color.Black
             )
         }
+    }
+}
 
-
-
-        if (isSelected) {
-            /*Icon(
-                imageVector = Icons.Default.Check,
-                contentDescription = "Selected",
-                tint = Color(0xFF00838F)
-            )*/
+@Preview(
+    uiMode = Configuration.UI_MODE_NIGHT_NO,
+    name = "Normal Mode"
+)
+@Preview(
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
+    name = "Dark Mode"
+)
+@Composable
+fun ChatScreenPreview() {
+    AppTheme {
+        Surface(tonalElevation = 5.dp) {
+            ChatScreen(
+                state = ChatUiState(
+                    chats = listOf(
+                        ChatDisplay(
+                            id = "1",
+                            name = "Chat with Alice",
+                            lastMessage = "See you tomorrow!"
+                        ),
+                        ChatDisplay(
+                            id = "2",
+                            name = "Chat with Bob",
+                            lastMessage = "Don't forget the meeting."
+                        ),
+                        ChatDisplay(
+                            id = "1",
+                            name = "Chat with Alice",
+                            lastMessage = "See you tomorrow!"
+                        ),
+                        ChatDisplay(
+                            id = "2",
+                            name = "Chat with Bob",
+                            lastMessage = "Don't forget the meeting."
+                        ),
+                        ChatDisplay(
+                            id = "1",
+                            name = "Chat with Alice",
+                            lastMessage = "See you tomorrow!"
+                        ),
+                        ChatDisplay(
+                            id = "2",
+                            name = "Chat with Bob",
+                            lastMessage = "Don't forget the meeting."
+                        ),
+                        ChatDisplay(
+                            id = "1",
+                            name = "Chat with Alice",
+                            lastMessage = "See you tomorrow!"
+                        ),
+                        ChatDisplay(
+                            id = "2",
+                            name = "Chat with Bob",
+                            lastMessage = "Don't forget the meeting."
+                        ),
+                        ChatDisplay(
+                            id = "1",
+                            name = "Chat with Alice",
+                            lastMessage = "See you tomorrow!"
+                        ),
+                        ChatDisplay(
+                            id = "2",
+                            name = "Chat with Bob",
+                            lastMessage = "Don't forget the meeting."
+                        ),
+                        ChatDisplay(
+                            id = "1",
+                            name = "Chat with Alice",
+                            lastMessage = "See you tomorrow!"
+                        ),
+                        ChatDisplay(
+                            id = "2",
+                            name = "Chat with Bob",
+                            lastMessage = "Don't forget the meeting."
+                        ),
+                        ChatDisplay(
+                            id = "1",
+                            name = "Chat with Alice",
+                            lastMessage = "See you tomorrow!"
+                        ),
+                        ChatDisplay(
+                            id = "2",
+                            name = "Chat with Bob",
+                            lastMessage = "Don't forget the meeting."
+                        ),
+                        ChatDisplay(
+                            id = "1",
+                            name = "Chat with Alice",
+                            lastMessage = "See you tomorrow!"
+                        ),
+                        ChatDisplay(
+                            id = "2",
+                            name = "Chat with Bob",
+                            lastMessage = "Don't forget the meeting."
+                        )
+                    ),
+                    friends = listOf(
+                        User(
+                            uid = "1",
+                            name = "John Doe",
+                            email = ""
+                        )
+                    )
+                ),
+                onFriendClick = { },
+                onFriendChatClick = { },
+                onBackClick = { }
+            )
         }
-
-
     }
 }
 
@@ -259,15 +375,15 @@ fun FriendItem(
 @Preview
 @Composable
 fun ItemFriendPreview() {
-   FriendItem(
-         friend = User(
-              uid = "1",
-              name = "John Doe",
-              email = "dasda@gmail.com"
-         ),
-            isSelected = true,
-            onClick = {}
-   )
+    FriendItem(
+        friend = User(
+            uid = "1",
+            name = "John Doe",
+            email = "dasda@gmail.com"
+        ),
+        isSelected = true,
+        onClick = {}
+    )
 }
 
 @Preview
@@ -289,7 +405,34 @@ fun FriendListPreview() {
                 uid = "1",
                 name = "John Doe",
                 email = "dasda@gmail.com"
-            )),
+            )
+        ),
         selectedFriends = setOf("1"),
         onFriendClick = {}
-    )}
+    )
+}
+
+@Preview
+@Composable
+fun ChatItemDisplayPreview() {
+    Column() {
+        ChatItemDisplay(
+            chat = ChatDisplay(
+                id = "1",
+                name = "Chat with Alice",
+                lastMessage = "See you tomorrow!"
+            ),
+            onFriendChatClick = {}
+        )
+        ChatItemDisplay(
+            chat = ChatDisplay(
+                id = "1",
+                name = "Chat with Alice",
+                lastMessage = "See you tomorrow! See you tomorrow! See you tomorrowSee you tomorrow! See you tomorrow! ! See you tomorrow! See you tomorrow! See you tomorrow! See you tomorrow! See you tomorrow! "
+            ),
+            onFriendChatClick = {}
+        )
+    }
+
+
+}

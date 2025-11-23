@@ -21,18 +21,15 @@ class ChatViewModel @Inject constructor(
     private val _state = MutableStateFlow(ChatUiState())
     val state: StateFlow<ChatUiState> = _state.asStateFlow()
 
-
     init {
         viewModelScope.launch {
             val userId = authRepository.getUserId()
             chatRepository.getUserChats(userId).collect { chats ->
                 _state.update { it.copy(chats = chats) }
+
+                val users = chatRepository.getAvailableUsersForChat(userId)
+                _state.update { it.copy( friends = users)}
             }
-        }
-        viewModelScope.launch {
-            val userId = authRepository.getUserId()
-            val users = chatRepository.getAvailableUsersForChat(userId)
-            _state.update { it.copy( friends = users)}
         }
     }
 
@@ -50,5 +47,4 @@ class ChatViewModel @Inject constructor(
             _state.update { it.copy(selectedFriends = selectedFriends) }
         }
     }
-
 }

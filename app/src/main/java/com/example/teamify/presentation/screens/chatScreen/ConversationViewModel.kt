@@ -9,6 +9,7 @@ import com.example.teamify.domain.model.Message
 import com.example.teamify.domain.model.User
 import com.example.teamify.domain.repository.AuthRepository
 import com.example.teamify.domain.repository.ChatRepository
+import com.example.teamify.domain.repository.FriendsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,6 +21,7 @@ import kotlinx.coroutines.launch
 class ConversationViewModel @Inject constructor(
     private val chatRepository: ChatRepository,
     private val authRepository: AuthRepository,
+    private val friendRepository: FriendsRepository,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -32,7 +34,7 @@ class ConversationViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            val friendName = authRepository.getUserNameBasedOnId(friendId)
+            val friendName = friendRepository.getUserNameBasedOnId(friendId)
             _state.update { it.copy(friendName = friendName) }
         }
         if (chatId.isNotEmpty()) {
@@ -45,7 +47,7 @@ class ConversationViewModel @Inject constructor(
         viewModelScope.launch {
             val currentUserId = authRepository.getUserId()
             val currentUserName = authRepository.getUser().name
-            val friendName = authRepository.getUserNameBasedOnId(friendId)
+            val friendName = friendRepository.getUserNameBasedOnId(friendId)
 
             chatRepository.getMessages(id).collect { messages ->
                 val uiMessages = messages.map { msg ->
@@ -55,6 +57,7 @@ class ConversationViewModel @Inject constructor(
                         senderName = senderName,
                         content = msg.content,
                         timestamp = msg.timestamp,
+                        isCurrentUser = msg.senderId == currentUserId
                     )
                 }
                 _state.update { it.copy(messages = uiMessages) }

@@ -7,6 +7,5 @@ interface AuthService {
     suspend fun signUp(email: String, password: String, name: String)
     fun signOut()
     fun getUserId(): String?
-    suspend fun getUserNameBasedOnId(userId: String): String?
     suspend fun getUserFromFirestore(userId: String): User
 }

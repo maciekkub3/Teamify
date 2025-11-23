@@ -83,7 +83,4 @@ class AuthRepositoryImpl @Inject constructor(
     override fun getUserId(): String {
         return authService.getUserId() ?: ""
     }
-    override suspend fun getUserNameBasedOnId(userId: String): String? {
-        return authService.getUserNameBasedOnId(userId)
-    }
 }

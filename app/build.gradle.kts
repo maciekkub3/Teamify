@@ -75,7 +75,8 @@ dependencies {
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.firebase.auth.ktx)
     implementation(libs.kotlinx.serialization.json)
-
+    implementation(libs.androidx.ui.text.google.fonts)
+    implementation (libs.androidx.material.icons.extended)
 
 
 

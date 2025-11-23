@@ -20,18 +20,6 @@ class FirebaseAuthServiceImpl @Inject constructor(
         return firebaseAuth.currentUser?.uid
     }
 
-    override suspend fun getUserNameBasedOnId(userId: String): String? {
-        return try {
-            val document = firestore.collection("users")
-                .document(userId)
-                .get()
-                .await()
-            document.getString("name")
-        } catch (e: Exception) {
-            return e.toString()
-        }
-    }
-
     override suspend fun getUserFromFirestore(userId: String): User {
         return try {
             val document = firestore.collection("users")

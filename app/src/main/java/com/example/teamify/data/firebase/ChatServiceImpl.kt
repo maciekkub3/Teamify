@@ -118,24 +118,29 @@ class ChatServiceImpl @Inject constructor(
                     close(error)
                     return@addSnapshotListener
                 }
-
                 launch {
                     try {
                         val chats = snapshot?.documents?.mapNotNull { chatDoc ->
                             chatDoc.toObject(Chat::class.java)?.copy(id = chatDoc.id)
                         } ?: emptyList()
 
-                        val allOtherUserIds = chats.flatMap { it.participants }.filter { it != userId }.distinct()
+                        val allOtherUserIds = chats.flatMap { it.participants }
+                            .filter { it.isNotBlank() && it != userId }
+                            .distinct()
 
-                        val userDocs = firestore.collection("users")
-                            .whereIn(FieldPath.documentId(), allOtherUserIds)
-                            .get().await()
+                        val userMap = if (allOtherUserIds.isNotEmpty()) {
+                            val userDocs = firestore.collection("users")
+                                .whereIn(FieldPath.documentId(), allOtherUserIds)
+                                .get()
+                                .await()
 
-                        val userMap = userDocs.documents.associateBy(
-                            { it.id },
-                            { it.getString("name") ?: "Unknown" }
-                        )
-
+                            userDocs.documents.associateBy(
+                                { it.id },
+                                { it.getString("name") ?: "Unknown" }
+                            )
+                        } else {
+                            emptyMap()
+                        }
                         val chatDisplays = chats.map { chat ->
                             val otherNames = chat.participants
                                 .filter { it != userId }
@@ -169,7 +174,9 @@ class ChatServiceImpl @Inject constructor(
                 .await()
 
             val chattedUserIds = userChats.documents.flatMap { chatDoc ->
-                (chatDoc.get("participants") as? List<*>).orEmpty()
+                (chatDoc.get("participants") as? List<*>)
+                    ?.mapNotNull { it as? String }
+                    .orEmpty()
             }.filter { it != currentUserId }
 
             val availableUsers = allUsers.filter { user ->

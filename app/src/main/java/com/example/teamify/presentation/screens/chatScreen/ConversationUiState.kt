@@ -16,5 +16,6 @@ data class UiMessage(
     val id: String,
     val senderName: String?,
     val content: String,
-    val timestamp: Timestamp?
+    val timestamp: Timestamp?,
+    val isCurrentUser: Boolean
 )
