@@ -27,7 +27,6 @@ class ConversationViewModel @Inject constructor(
     private var chatId = savedStateHandle["chatId"] ?: ""
     private val friendId = savedStateHandle["friendId"] ?: ""
 
-
     init {
         viewModelScope.launch {
             val friendName = friendRepository.getUserNameBasedOnId(friendId)
