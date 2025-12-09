@@ -1,5 +1,6 @@
 package com.example.teamify.data.repository
 
+import android.net.Uri
 import com.example.teamify.data.firebase.AuthService
 import com.example.teamify.data.model.AuthState
 import com.example.teamify.data.model.User
@@ -7,6 +8,7 @@ import com.example.teamify.data.model.UserInfo
 import com.example.teamify.data.model.UserRole
 import com.example.teamify.data.model.exception.AuthException
 import com.example.teamify.domain.repository.AuthRepository
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -37,7 +39,9 @@ class AuthRepositoryImpl @Inject constructor(
             userInfo.updateUserInfo(
                 email = email,
                 role = user.role.name.lowercase(),
-                name = user.name.toString()
+                name = user.name.toString(),
+                id = uid,
+                imageUrl = user.profileImageUrl
             )
         } catch (e: AuthException) {
             _authState.value = AuthState.Error(e.message)
@@ -45,16 +49,17 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun signUp(email: String, password: String, name: String) {
+    override suspend fun signUp(email: String, password: String, name: String, imageUri: Uri?) {
         if (email.isBlank() || password.isBlank() || name.isBlank()) {
             _authState.value = AuthState.Error("Email, name and password must not be empty")
             return
         }
         _authState.value = AuthState.Loading
         try {
-            authService.signUp(email, password, name)
+            authService.signUp(email, password, name, imageUri)
+            val userId = authService.getUserId()
+            userInfo.updateUserInfo(name, email, "worker", userId ?: "", imageUri.toString())
             _authState.value = AuthState.Authenticated
-            userInfo.updateUserInfo(name, email, "worker")
         } catch (e: AuthException) {
             _authState.value = AuthState.Error(e.message)
         }
@@ -66,7 +71,7 @@ class AuthRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getUser(): User {
-        return combine(userInfo.name, userInfo.email, userInfo.role) { name, email, roleString ->
+        return combine(userInfo.name, userInfo.email, userInfo.role, userInfo.imageUrl) { name, email, roleString, imageUrl ->
             val userRole = when (roleString) {
                 "admin" -> UserRole.ADMIN
                 "worker" -> UserRole.WORKER
@@ -75,12 +80,19 @@ class AuthRepositoryImpl @Inject constructor(
             User(
                 name = name ?: "",
                 email = email ?: "",
-                role = userRole
+                role = userRole,
+                id = getUserId(),
+                profileImageUrl = imageUrl
             )
         }.first()
     }
 
     override fun getUserId(): String {
         return authService.getUserId() ?: ""
+    }
+
+    override suspend fun getUserById(userId: String): User {
+
+        return authService.getUserFromFirestore(userId)
     }
 }

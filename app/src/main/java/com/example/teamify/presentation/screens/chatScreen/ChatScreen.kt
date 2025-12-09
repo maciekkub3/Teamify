@@ -1,24 +1,35 @@
 package com.example.teamify.presentation.screens.chatScreen
 
+import ProfileImage
+import android.R.attr.singleLine
 import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AddComment
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.Scaffold
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -36,21 +47,27 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.teamify.domain.model.ChatDisplay
+import androidx.compose.ui.unit.sp
+import com.example.teamify.domain.model.Chat
+import com.example.teamify.domain.model.ChatWithUserInfo
 import com.example.teamify.domain.model.User
-import com.example.teamify.presentation.common.TopBar
 import com.example.teamify.ui.theme.AppTheme
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChatScreen(
     state: ChatUiState,
-    onFriendClick: (User) -> Unit,
-    onFriendChatClick: (ChatDisplay) -> Unit,
+    onFriendClick: (User) -> Unit = {},
+    onFriendChatClick: (Chat) -> Unit = {},
     onBackClick: () -> Unit = { }
 ) {
+
+    var searchQuery by remember { mutableStateOf("") }
 
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true
@@ -58,31 +75,74 @@ fun ChatScreen(
     val scope = rememberCoroutineScope()
     var showBottomSheet by remember { mutableStateOf(false) }
 
-    Scaffold(
-        topBar = {
-            TopBar(title = "Chats", onBackClick = { onBackClick() })
-        },
-        bottomBar = {
-            Button(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(12.dp),
-                onClick = {
-                    showBottomSheet = true
-                }
-            ) {
-                Text("Add new chat")
-            }
-        },
-    ) { innerPadding ->
-        Box(modifier = Modifier.padding(innerPadding)) {
+
+        Box(
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxSize()
+        ) {
             Column {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                ) {
+                    Text(
+                        text = "Messages",
+                        style = MaterialTheme.typography.headlineLarge,
+                        fontWeight = FontWeight.Bold,
+                    )
+
+                    Spacer(modifier = Modifier.weight(1f))
+
+                    Box(
+                        modifier = Modifier
+                            .size(45.dp) // circle size
+                            .clip(CircleShape)
+                            .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)), // light primary tint
+                        contentAlignment = Alignment.Center
+                    ) {
+                        IconButton(onClick = { showBottomSheet = true }) {
+                            Icon(
+                                imageVector = Icons.Default.AddComment,
+                                contentDescription = "Add Chat",
+                                tint = MaterialTheme.colorScheme.tertiary
+                            )
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                OutlinedTextField(
+                    value = searchQuery,
+                    onValueChange = { searchQuery = it },
+                    placeholder = { Text("Search chats") },
+                    leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+                    singleLine = true,
+                    textStyle = MaterialTheme.typography.bodyMedium.copy(fontSize = 14.sp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp)
+                )
+
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                val filteredChats = if (searchQuery.isBlank()) {
+                    state.chats
+                } else {
+                    state.chats.filter { chat ->
+                        chat.otherUserName.contains(searchQuery, ignoreCase = true) ||
+                                chat.chat.lastMessage.contains(searchQuery, ignoreCase = true)
+                    }
+                }
+
                 LazyColumn {
-                    items(state.chats.size) { index ->
-                        val chat = state.chats[index]
+                    items(filteredChats.size) { index ->
+                        val chat = filteredChats[index]
                         ChatItemDisplay(
                             chat = chat,
-                            onFriendChatClick = { onFriendChatClick(chat) },
+                            onFriendChatClick = { onFriendChatClick(chat.chat) },
                         )
                     }
                 }
@@ -122,59 +182,84 @@ fun ChatScreen(
                 }
             }
         }
-    }
 }
 
 @Composable
 fun ChatItemDisplay(
-    chat: ChatDisplay,
+    chat: ChatWithUserInfo,
     onFriendChatClick: () -> Unit
 ) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center,
-        modifier = Modifier
-            .padding(12.dp)
-    ) {
-        Box(
-            modifier = Modifier
-                .size(40.dp)
-                .clip(CircleShape)
-                .background(Color.Gray),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = chat.name.first().toString().uppercase(),
-                color = Color.White,
-                style = MaterialTheme.typography.bodyMedium
-            )
-        }
+    val timestamp = chat.chat.lastMessageTimestamp
+    val currentDate = LocalDate.now()
 
-        Spacer(modifier = Modifier.width(12.dp))
-
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable { onFriendChatClick() }
-        ) {
-            Text(
-                text = chat.name,
-                style = MaterialTheme.typography.bodyLarge,
-                fontWeight = FontWeight.Bold
-            )
-            Text(
-                text = chat.lastMessage,
-                style = MaterialTheme.typography.bodyMedium,
-                color = Color.Gray,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-
-        }
+    val formattedTimestamp = remember(timestamp) {
+        timestamp?.let {
+            if (it.toLocalDate() == currentDate) {
+                it.format(DateTimeFormatter.ofPattern("HH:mm"))
+            } else {
+                it.format(DateTimeFormatter.ofPattern("dd/MM"))
+            }
+        } ?: ""
     }
 
-}
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onFriendChatClick() }
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 12.dp)
+        ) {
+            ProfileImage(
+                name = chat.otherUserName,
+                profileImageUrl = chat.otherUserPhotoUrl,
+                modifier = Modifier.size(50.dp)
+            )
 
+            Spacer(modifier = Modifier.width(12.dp))
+
+            Column(
+                modifier = Modifier.weight(1f) // take remaining space
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = chat.otherUserName,
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = formattedTimestamp,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color.Gray
+                    )
+                }
+
+                Text(
+                    text = chat.chat.lastMessage,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.Gray,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.padding(top = 2.dp)
+                )
+
+                Divider(
+                    color = Color.Gray.copy(alpha = 0.3f),
+                    thickness = 1.dp,
+                    modifier = Modifier.padding(top = 12.dp)
+                )
+            }
+        }
+    }
+}
 @Composable
 fun GroupFriendsList(
     friends: List<User>,
@@ -267,99 +352,36 @@ fun ChatScreenPreview() {
             ChatScreen(
                 state = ChatUiState(
                     chats = listOf(
-                        ChatDisplay(
-                            id = "1",
-                            name = "Chat with Alice",
-                            lastMessage = "See you tomorrow!"
+                        ChatWithUserInfo(
+                            chat = Chat(
+                                id = "1",
+                                name = "Chat with Alice",
+                                lastMessage = "See you tomorrow!",
+                                lastMessageTimestamp = LocalDateTime.now()
+                            ),
+                            otherUserName = "Alice",
+                            otherUserPhotoUrl = null
                         ),
-                        ChatDisplay(
-                            id = "2",
-                            name = "Chat with Bob",
-                            lastMessage = "Don't forget the meeting."
-                        ),
-                        ChatDisplay(
-                            id = "1",
-                            name = "Chat with Alice",
-                            lastMessage = "See you tomorrow!"
-                        ),
-                        ChatDisplay(
-                            id = "2",
-                            name = "Chat with Bob",
-                            lastMessage = "Don't forget the meeting."
-                        ),
-                        ChatDisplay(
-                            id = "1",
-                            name = "Chat with Alice",
-                            lastMessage = "See you tomorrow!"
-                        ),
-                        ChatDisplay(
-                            id = "2",
-                            name = "Chat with Bob",
-                            lastMessage = "Don't forget the meeting."
-                        ),
-                        ChatDisplay(
-                            id = "1",
-                            name = "Chat with Alice",
-                            lastMessage = "See you tomorrow!"
-                        ),
-                        ChatDisplay(
-                            id = "2",
-                            name = "Chat with Bob",
-                            lastMessage = "Don't forget the meeting."
-                        ),
-                        ChatDisplay(
-                            id = "1",
-                            name = "Chat with Alice",
-                            lastMessage = "See you tomorrow!"
-                        ),
-                        ChatDisplay(
-                            id = "2",
-                            name = "Chat with Bob",
-                            lastMessage = "Don't forget the meeting."
-                        ),
-                        ChatDisplay(
-                            id = "1",
-                            name = "Chat with Alice",
-                            lastMessage = "See you tomorrow!"
-                        ),
-                        ChatDisplay(
-                            id = "2",
-                            name = "Chat with Bob",
-                            lastMessage = "Don't forget the meeting."
-                        ),
-                        ChatDisplay(
-                            id = "1",
-                            name = "Chat with Alice",
-                            lastMessage = "See you tomorrow!"
-                        ),
-                        ChatDisplay(
-                            id = "2",
-                            name = "Chat with Bob",
-                            lastMessage = "Don't forget the meeting."
-                        ),
-                        ChatDisplay(
-                            id = "1",
-                            name = "Chat with Alice",
-                            lastMessage = "See you tomorrow!"
-                        ),
-                        ChatDisplay(
-                            id = "2",
-                            name = "Chat with Bob",
-                            lastMessage = "Don't forget the meeting."
+                        ChatWithUserInfo(
+                            chat = Chat(
+                                id = "2",
+                                name = "Chat with Bob",
+                                lastMessage = "Don't forget the meeting."
+                            ),
+                            otherUserName = "Bob",
+                            otherUserPhotoUrl = null
                         )
                     ),
                     friends = listOf(
                         User(
                             uid = "1",
                             name = "John Doe",
-                            email = ""
-                        )
+                            email = "")
                     )
-                ),
-                onFriendClick = { },
-                onFriendChatClick = { },
-                onBackClick = { }
+                )
             )
+
+
         }
     }
 }
@@ -410,18 +432,15 @@ fun FriendListPreview() {
 fun ChatItemDisplayPreview() {
     Column() {
         ChatItemDisplay(
-            chat = ChatDisplay(
-                id = "1",
-                name = "Chat with Alice",
-                lastMessage = "See you tomorrow!"
-            ),
-            onFriendChatClick = {}
-        )
-        ChatItemDisplay(
-            chat = ChatDisplay(
-                id = "1",
-                name = "Chat with Alice",
-                lastMessage = "See you tomorrow! See you tomorrow! See you tomorrowSee you tomorrow! See you tomorrow! ! See you tomorrow! See you tomorrow! See you tomorrow! See you tomorrow! See you tomorrow! "
+            chat = ChatWithUserInfo(
+                chat = Chat(
+                    id = "1",
+                    name = "Chat with Alice",
+                    lastMessage = "See you tomorrow!",
+                    lastMessageTimestamp = LocalDateTime.now()
+                ),
+                otherUserName = "Alice",
+                otherUserPhotoUrl = null
             ),
             onFriendChatClick = {}
         )

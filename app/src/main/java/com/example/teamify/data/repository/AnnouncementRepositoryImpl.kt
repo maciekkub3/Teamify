@@ -1,9 +1,11 @@
 package com.example.teamify.data.repository
-
+import com.example.teamify.domain.mapper.toDomain
 import com.example.teamify.domain.model.Announcement
+import com.example.teamify.domain.model.AnnouncementDto
 import com.example.teamify.domain.repository.AnnouncementRepository
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query.Direction
 import jakarta.inject.Inject
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -14,14 +16,15 @@ class AnnouncementRepositoryImpl @Inject constructor(
     private val firestore: FirebaseFirestore
 ): AnnouncementRepository {
 
-    override suspend fun postAnnouncement(title: String, content: String) {
+    override suspend fun postAnnouncement(title: String, content: String, priority: String) {
         try {
             val docRef = firestore.collection("announcements").document()
 
             val announcementData = mapOf(
                 "title" to title,
                 "content" to content,
-                "timestamp" to FieldValue.serverTimestamp()
+                "timestamp" to FieldValue.serverTimestamp(),
+                "priority" to priority
             )
             docRef.set(announcementData).await()
         } catch (e: Exception) {
@@ -42,7 +45,7 @@ class AnnouncementRepositoryImpl @Inject constructor(
 
     override suspend fun getAnnouncements(): Flow<List<Announcement>> = callbackFlow {
         firestore.collection("announcements")
-            .orderBy("timestamp")
+            .orderBy("timestamp", Direction.DESCENDING)
             .addSnapshotListener { snapshot, error ->
                 if (error != null) {
                     close(error)
@@ -50,16 +53,18 @@ class AnnouncementRepositoryImpl @Inject constructor(
                 }
 
                 val announcements = snapshot?.documents?.map { doc ->
-                    Announcement(
+                    AnnouncementDto(
                         id = doc.id,
                         title = doc.getString("title") ?: "",
                         content = doc.getString("content") ?: "",
-                        timestamp = doc.getTimestamp("timestamp")
-                    )
+                        date = doc.getTimestamp("timestamp"),
+                        priority = doc.getString("priority") ?: ""
+                    ).toDomain()
                 } ?: emptyList()
 
                 trySend(announcements)
             }
         awaitClose { }
     }
+
 }

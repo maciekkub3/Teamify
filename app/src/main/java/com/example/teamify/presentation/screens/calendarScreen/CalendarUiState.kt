@@ -1,8 +1,8 @@
 package com.example.teamify.presentation.screens.calendarScreen
 
-import com.example.teamify.data.model.User
-import com.example.teamify.data.model.UserInfo
+import com.example.teamify.domain.model.Event
+import com.example.teamify.domain.model.EventDto
 
 data class CalendarUiState(
-    val user: User? = null
+    val events: List<Event> = emptyList(),
 )

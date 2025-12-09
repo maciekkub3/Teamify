@@ -1,37 +1,36 @@
 package com.example.teamify.presentation.screens.chatScreen
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.teamify.domain.repository.AuthRepository
 import com.example.teamify.domain.repository.ChatRepository
 import com.example.teamify.domain.repository.FriendsRepository
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
-import jakarta.inject.Inject
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-@HiltViewModel
-class ConversationViewModel @Inject constructor(
+@HiltViewModel(assistedFactory = ConversationViewModel.Factory::class)
+class ConversationViewModel @AssistedInject constructor(
+    @Assisted("chatId") private var chatId: String,
+    @Assisted("friendId") private val friendId: String,
     private val chatRepository: ChatRepository,
     private val authRepository: AuthRepository,
-    private val friendRepository: FriendsRepository,
-    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(ConversationUiState())
     val state: StateFlow<ConversationUiState> = _state
 
-    private var chatId = savedStateHandle["chatId"] ?: ""
-    private val friendId = savedStateHandle["friendId"] ?: ""
-
-
     init {
         viewModelScope.launch {
-            val friendName = friendRepository.getUserNameBasedOnId(friendId)
-            _state.update { it.copy(friendName = friendName) }
+            val friend = authRepository.getUserById(friendId)
+            _state.update { it.copy(friend = friend) }
         }
         if (chatId.isNotEmpty()) {
             observeMessages(chatId)
@@ -42,8 +41,9 @@ class ConversationViewModel @Inject constructor(
 
         viewModelScope.launch {
             val currentUserId = authRepository.getUserId()
-            val currentUserName = authRepository.getUser().name
-            val friendName = friendRepository.getUserNameBasedOnId(friendId)
+            val currentUserNameDeferred = async { authRepository.getUser().name }
+            val friendNameDeferred = async { authRepository.getUserById(friendId).name }
+            val (currentUserName, friendName) = listOf(currentUserNameDeferred, friendNameDeferred).awaitAll()
 
             chatRepository.getMessages(id).collect { messages ->
                 val uiMessages = messages.map { msg ->
@@ -52,7 +52,7 @@ class ConversationViewModel @Inject constructor(
                         id = msg.id,
                         senderName = senderName,
                         content = msg.content,
-                        timestamp = msg.timestamp,
+                        date = msg.date,
                         isCurrentUser = msg.senderId == currentUserId
                     )
                 }
@@ -66,7 +66,7 @@ class ConversationViewModel @Inject constructor(
         _state.update { it.copy(currentMessage = message) }
     }
 
-    fun sendMessage(friendId: String) {
+    fun sendMessage() {
         val message = state.value.currentMessage
         if (message.isBlank()) return
 
@@ -85,5 +85,13 @@ class ConversationViewModel @Inject constructor(
             _state.update { it.copy(currentMessage = "") }
 
         }
+    }
+
+    @AssistedFactory
+    interface Factory {
+        fun create(
+            @Assisted("chatId") chatId: String,
+            @Assisted("friendId") friendId: String,
+        ): ConversationViewModel
     }
 }

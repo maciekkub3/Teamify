@@ -22,13 +22,15 @@ import com.example.teamify.ui.theme.AppTheme
 import dagger.hilt.android.AndroidEntryPoint
 import androidx.compose.runtime.getValue
 import androidx.core.view.WindowCompat
+import com.example.teamify.navigation.FileRoute
 import com.example.teamify.presentation.common.BottomNavigationBar
 
 val bottomNavRoutes = listOf(
     HomeRoute,
     ChatRoute,
     AnnouncementRoute,
-    CalendarRoute
+    CalendarRoute,
+    FileRoute
 )
 
 @AndroidEntryPoint
@@ -53,6 +55,7 @@ class MainActivity : ComponentActivity() {
                         bottomBar = {
                             if (showBottomBar) {
                                 BottomNavigationBar(
+                                    currentRoute = currentRoute,
 
                                     onChatClick = {
                                         navController.navigate(ChatRoute) {
@@ -77,7 +80,13 @@ class MainActivity : ComponentActivity() {
                                             popUpTo(navController.graph.startDestinationId)
                                             launchSingleTop = true
                                         }
-                                    }
+                                    },
+                                    onFilesClick = {
+                                        navController.navigate(FileRoute) {
+                                            popUpTo(navController.graph.startDestinationId)
+                                            launchSingleTop = true
+                                        }
+                                    },
                                 )
                             }
                         }

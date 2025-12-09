@@ -1,6 +1,7 @@
 package com.example.teamify.data.firebase
 
-import com.example.teamify.domain.model.ChatDisplay
+import com.example.teamify.domain.model.Chat
+import com.example.teamify.domain.model.ChatDto
 import com.example.teamify.domain.model.Message
 import com.example.teamify.domain.model.User
 import kotlinx.coroutines.flow.Flow
@@ -10,7 +11,7 @@ interface ChatService {
     suspend fun deleteMessage(chatId: String, messageId: String)
     suspend fun createChatRoom(members: List<String>): String
     suspend fun chatExists(chatId: String): Boolean
-    fun getUserChats(userId: String): Flow<List<ChatDisplay>>
+    suspend fun getUserChats(userId: String): Flow<List<Chat>>
     suspend fun getUsers(): List<User>
     suspend fun getAvailableUsersForChat(currentUserId: String): List<User>
     fun getMessages(chatId: String): Flow<List<Message>>

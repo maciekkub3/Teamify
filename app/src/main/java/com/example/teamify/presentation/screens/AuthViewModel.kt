@@ -1,5 +1,6 @@
 package com.example.teamify.presentation.screens
 
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -31,13 +32,15 @@ class AuthViewModel @Inject constructor(
     fun onEmailChange(newEmail: String) { _state.update { it.copy(email = newEmail) } }
     fun onNameChange(newName: String) { _state.update { it.copy(name = newName) } }
     fun onPasswordChange(newPassword: String) { _state.update { it.copy(password = newPassword) } }
+    fun onImageUriChange(newImageUri: Uri?) { _state.update { it.copy(selectedImageUri = newImageUri) } }
 
     fun register() {
         viewModelScope.launch {
             authRepository.signUp(
                 email = state.value.email,
                 password = state.value.password,
-                name = state.value.name
+                name = state.value.name,
+                imageUri = state.value.selectedImageUri
             )
         }
     }

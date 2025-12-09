@@ -34,9 +34,9 @@ class AnnouncementViewModel @Inject constructor(
         }
     }
 
-    fun addAnnouncement(title: String, content: String) {
+    fun addAnnouncement(title: String, content: String, priority: String) {
         viewModelScope.launch {
-            announcementRepository.postAnnouncement(title, content)
+            announcementRepository.postAnnouncement(title, content, priority)
         }
     }
 

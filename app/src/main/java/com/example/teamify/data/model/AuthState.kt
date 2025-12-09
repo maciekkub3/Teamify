@@ -13,5 +13,7 @@ enum class UserRole{ ADMIN, WORKER, }
 data class User(
     val name: String,
     val email: String,
-    val role: UserRole
+    val role: UserRole,
+    val id: String,
+    val profileImageUrl: String? = null
 )

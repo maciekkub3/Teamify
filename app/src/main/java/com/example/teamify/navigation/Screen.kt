@@ -33,8 +33,20 @@ data object CalendarRoute: NavRoute {
 }
 
 @Serializable
+data class AddEventRoute(
+    val date: String? = null
+): NavRoute {
+    override val route: String = "AddEventRoute"
+}
+
+@Serializable
 data object AnnouncementRoute: NavRoute {
     override val route: String = "AnnouncementRoute"
+}
+
+@Serializable
+data object FileRoute: NavRoute {
+    override val route: String = "FileRoute"
 }
 
 @Serializable

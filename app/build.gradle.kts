@@ -1,4 +1,6 @@
 import org.gradle.kotlin.dsl.implementation
+import org.gradle.kotlin.dsl.testImplementation
+import org.gradle.kotlin.dsl.testRuntimeOnly
 
 plugins {
     alias(libs.plugins.android.application)
@@ -8,8 +10,7 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.kotlin.serialization)
-
-
+    alias(libs.plugins.android.junit)
 }
 
 android {
@@ -18,7 +19,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.teamify"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
@@ -59,11 +60,17 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.firebase.firestore)
+    implementation(libs.firebase.storage)
     testImplementation(libs.junit)
+    testImplementation(libs.mockk)
+    testImplementation (libs.jupiter.junit.jupiter.api)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testRuntimeOnly (libs.junit.jupiter.engine)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
+    androidTestImplementation (libs.mockk.android)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
@@ -77,7 +84,6 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.androidx.ui.text.google.fonts)
     implementation (libs.androidx.material.icons.extended)
-
-
-
+    implementation("com.kizitonwose.calendar:compose:2.6.1")
+    implementation(libs.coil.compose)
 }

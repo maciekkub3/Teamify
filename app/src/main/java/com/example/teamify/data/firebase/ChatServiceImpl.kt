@@ -1,23 +1,24 @@
 package com.example.teamify.data.firebase
 
 import com.example.teamify.data.model.exception.AuthException
+import com.example.teamify.domain.mapper.toDomain
 import com.example.teamify.domain.model.Chat
-import com.example.teamify.domain.model.ChatDisplay
+import com.example.teamify.domain.model.ChatDto
 import com.example.teamify.domain.model.Message
+import com.example.teamify.domain.model.MessageDto
 import com.example.teamify.domain.model.User
-import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query.Direction
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 class ChatServiceImpl @Inject constructor(
     private val firestore: FirebaseFirestore
-): ChatService {
+) : ChatService {
 
     override suspend fun sendMessage(chatId: String, message: String, senderId: String) {
         try {
@@ -37,7 +38,8 @@ class ChatServiceImpl @Inject constructor(
             chatRef.update(
                 mapOf(
                     "lastMessage" to message,
-                    "lastMessageTimestamp" to FieldValue.serverTimestamp()
+                    "lastMessageTimestamp" to FieldValue.serverTimestamp(),
+                    "lastMessageSenderId" to senderId
                 )
             ).await()
 
@@ -70,7 +72,6 @@ class ChatServiceImpl @Inject constructor(
                 "participants" to users,
                 "createdAt" to FieldValue.serverTimestamp(),
                 "lastMessage" to "",
-                "lastMessageTimestamp" to FieldValue.serverTimestamp()
             )
             docRef.set(chatData).await()
             docRef.id
@@ -97,72 +98,36 @@ class ChatServiceImpl @Inject constructor(
                     return@addSnapshotListener
                 }
                 val messages = snapshot?.documents?.map { doc ->
-                    Message(
+                    MessageDto(
                         id = doc.id,
                         senderId = doc.getString("senderId") ?: "",
                         content = doc.getString("message") ?: "",
-                        timestamp = doc.getTimestamp("timestamp")
-                    )
+                        date = doc.getTimestamp("timestamp")
+                    ).toDomain()
                 } ?: emptyList()
                 trySend(messages)
             }
-        awaitClose {  }
+        awaitClose { }
     }
 
-    override fun getUserChats(userId: String): Flow<List<ChatDisplay>> = callbackFlow {
+    override suspend fun getUserChats(userId: String): Flow<List<Chat>> = callbackFlow {
         val listener = firestore
             .collection("chats")
             .whereArrayContains("participants", userId)
+            .orderBy("lastMessageTimestamp", Direction.DESCENDING)
             .addSnapshotListener { snapshot, error ->
                 if (error != null) {
                     close(error)
                     return@addSnapshotListener
                 }
-                launch {
-                    try {
-                        val chats = snapshot?.documents?.mapNotNull { chatDoc ->
-                            chatDoc.toObject(Chat::class.java)?.copy(id = chatDoc.id)
-                        } ?: emptyList()
+                val chats = snapshot?.documents?.mapNotNull { doc ->
+                    doc.toObject(ChatDto::class.java)?.toDomain()?.copy(id = doc.id)
+                } ?: emptyList()
 
-                        val allOtherUserIds = chats.flatMap { it.participants }
-                            .filter { it.isNotBlank() && it != userId }
-                            .distinct()
-
-                        val userMap = if (allOtherUserIds.isNotEmpty()) {
-                            val userDocs = firestore.collection("users")
-                                .whereIn(FieldPath.documentId(), allOtherUserIds)
-                                .get()
-                                .await()
-
-                            userDocs.documents.associateBy(
-                                { it.id },
-                                { it.getString("name") ?: "Unknown" }
-                            )
-                        } else {
-                            emptyMap()
-                        }
-                        val chatDisplays = chats.map { chat ->
-                            val otherNames = chat.participants
-                                .filter { it != userId }
-                                .map { uid -> userMap[uid] ?: "Unknown" }
-
-                            ChatDisplay(
-                                id = chat.id,
-                                name = otherNames.joinToString(", "),
-                                lastMessage = chat.lastMessage,
-                                lastMessageTimestamp = chat.lastMessageTimestamp,
-                                participants = chat.participants
-                            )
-                        }
-
-                        trySend(chatDisplays)
-                    } catch (e: Exception) {
-                        close(e)
-                    }
-                }
+                trySend(chats)
             }
-
         awaitClose { listener.remove() }
+
     }
 
     override suspend fun getAvailableUsersForChat(currentUserId: String): List<User> {

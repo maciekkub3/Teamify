@@ -1,26 +1,19 @@
 package com.example.teamify.domain.model
 
-import com.google.firebase.Timestamp
+import java.time.LocalDateTime
 
-data class Chat (
+data class Chat(
     val id: String = "",
-    val participants: List<String> = emptyList(),
+    val name: String = "",
     val lastMessage: String = "",
-    val lastMessageTimestamp: Timestamp? = null,
+    val lastMessageTimestamp: LocalDateTime? = null,
+    val lastMessageSenderId: String = "",
+    val participants: List<String> = emptyList(),
+    val createdAt: LocalDateTime? = null
 )
 
-data class Message(
-    val id: String = "",
-    val chatId: String = "",
-    val senderId: String = "",
-    val content: String = "",
-    val timestamp: Timestamp? = null,
-    val type: MessageType = MessageType.TEXT
+data class ChatWithUserInfo(
+    val chat: Chat,
+    val otherUserName: String,
+    val otherUserPhotoUrl: String?
 )
-
-enum class MessageType {
-    TEXT,
-    IMAGE,
-    VIDEO,
-    FILE
-}
