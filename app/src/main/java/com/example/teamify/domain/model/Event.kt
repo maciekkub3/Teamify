@@ -1,7 +1,6 @@
 package com.example.teamify.domain.model
 
 import java.time.LocalDate
-import java.time.LocalDateTime
 import java.time.LocalTime
 
 data class Event (

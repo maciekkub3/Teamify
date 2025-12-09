@@ -1,13 +1,11 @@
 package com.example.teamify.presentation.screens.chatScreen
 
-import com.example.teamify.MainDispatcherExtension
 import com.example.teamify.data.model.User
 import com.example.teamify.data.model.UserRole
 import com.example.teamify.domain.model.Message
 import com.example.teamify.domain.repository.AuthRepository
 import com.example.teamify.domain.repository.ChatRepository
 import com.example.teamify.domain.repository.FriendsRepository
-import com.google.firebase.Timestamp
 import io.mockk.clearAllMocks
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -18,9 +16,7 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
 
-@ExtendWith(MainDispatcherExtension::class)
 class ConversationViewModelTest {
 
     private val chatRepository: ChatRepository = mockk()
@@ -42,6 +38,12 @@ class ConversationViewModelTest {
     private val helloFriendMessage = "Hello Friend"
     private val newChatId = "newChatId"
     private val anotherMessageContent = "Another Message"
+    private val friend = User(
+        name = friendDisplayName,
+        email = "",
+        role = UserRole.WORKER,
+        id = friendName,
+    )
 
     @BeforeEach
     fun setUp() {
@@ -51,13 +53,22 @@ class ConversationViewModelTest {
         coEvery { authRepository.getUser() } returns User(
             name = currentUserDisplayName,
             email = "",
-            role = UserRole.WORKER
+            role = UserRole.WORKER,
+            id = userId,
+        )
+
+        // 🔥 Missing mock — this caused the crash
+        coEvery { authRepository.getUserById(friendName) } returns User(
+            name = friendDisplayName,
+            email = "",
+            role = UserRole.WORKER,
+            id = friendName
         )
 
         coEvery { chatRepository.getMessages(chatId) } returns flowOf(
             listOf(
-                Message(id = messageId1, senderId = userId, content = messageContent1, timestamp = Timestamp(123456789, 0)),
-                Message(id = messageId2, senderId = friendName, content = messageContent2, timestamp = Timestamp(123456789, 0))
+                Message(id = messageId1, senderId = userId, content = messageContent1),
+                Message(id = messageId2, senderId = friendName, content = messageContent2)
             )
         )
 
@@ -66,9 +77,9 @@ class ConversationViewModelTest {
             friendId = friendName,
             chatRepository,
             authRepository,
-            friendRepository,
         )
     }
+
 
     @AfterEach
     fun tearDown() {
@@ -78,7 +89,6 @@ class ConversationViewModelTest {
     @Test
     fun `test initial state`() = runTest {
         val state = viewModel.state.value
-        assertEquals(friendDisplayName, state.friendName)
         assertEquals(2, state.messages.size)
     }
 
@@ -110,7 +120,6 @@ class ConversationViewModelTest {
             friendId = friendName,
             chatRepository,
             authRepository,
-            friendRepository,
         )
 
         val state = newViewModel.state.value

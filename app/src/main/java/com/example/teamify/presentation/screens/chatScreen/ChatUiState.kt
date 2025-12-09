@@ -1,7 +1,5 @@
 package com.example.teamify.presentation.screens.chatScreen
 
-import com.example.teamify.domain.model.Chat
-import com.example.teamify.domain.model.ChatDto
 import com.example.teamify.domain.model.ChatWithUserInfo
 import com.example.teamify.domain.model.User
 

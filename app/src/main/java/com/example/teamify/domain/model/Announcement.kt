@@ -1,6 +1,5 @@
 package com.example.teamify.domain.model
 
-import com.google.firebase.Timestamp
 import java.time.LocalDate
 
 data class Announcement(

@@ -1,6 +1,5 @@
 package com.example.teamify.navigation
 
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -11,7 +10,6 @@ import com.example.teamify.presentation.screens.loginScreen.LoginScreen
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.toRoute
 import com.example.teamify.data.model.AuthState
 import com.example.teamify.presentation.screens.AuthViewModel
@@ -126,7 +124,6 @@ fun Navigation(
                             friendId = chat.participants.first { it != currentUserId }
                         ))
                 },
-                onBackClick = { navController.popBackStack() }
             )
         }
         composable<CalendarRoute> {

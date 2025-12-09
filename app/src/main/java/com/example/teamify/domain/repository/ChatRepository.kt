@@ -1,7 +1,5 @@
 package com.example.teamify.domain.repository
 
-import com.example.teamify.domain.model.Chat
-import com.example.teamify.domain.model.ChatDto
 import com.example.teamify.domain.model.ChatWithUserInfo
 import com.example.teamify.domain.model.Message
 import com.example.teamify.domain.model.User

@@ -1,7 +1,6 @@
 package com.example.teamify.data.firebase
 
 import android.net.Uri
-import android.util.Log.e
 import com.example.teamify.data.model.User
 import com.example.teamify.data.model.UserRole
 import com.example.teamify.data.model.exception.AuthException

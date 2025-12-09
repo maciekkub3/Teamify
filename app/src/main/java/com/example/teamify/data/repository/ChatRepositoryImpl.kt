@@ -1,19 +1,13 @@
 package com.example.teamify.data.repository
 
-import com.example.teamify.data.firebase.AuthService
 import com.example.teamify.data.firebase.ChatService
-import com.example.teamify.domain.model.Chat
-import com.example.teamify.domain.model.ChatDto
 import com.example.teamify.domain.model.ChatWithUserInfo
 import com.example.teamify.domain.model.Message
 import com.example.teamify.domain.model.User
 import com.example.teamify.domain.repository.AuthRepository
 import com.example.teamify.domain.repository.ChatRepository
-import com.example.teamify.domain.repository.UserRepository
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 
 class ChatRepositoryImpl @Inject constructor(

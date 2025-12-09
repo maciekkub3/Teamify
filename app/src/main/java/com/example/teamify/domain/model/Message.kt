@@ -1,6 +1,5 @@
 package com.example.teamify.domain.model
 
-import java.time.LocalDate
 import java.time.LocalDateTime
 
 data class Message(
