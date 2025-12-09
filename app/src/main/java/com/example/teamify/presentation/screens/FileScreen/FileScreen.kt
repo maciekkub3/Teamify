@@ -3,7 +3,6 @@ package com.example.teamify.presentation.screens.FileScreen
 import android.content.Context
 import android.content.res.Configuration
 import android.net.Uri
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts

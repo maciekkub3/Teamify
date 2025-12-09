@@ -18,22 +18,17 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddAlert
-import androidx.compose.material.icons.filled.AddComment
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxState
@@ -58,8 +53,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.teamify.data.model.UserRole
 import com.example.teamify.domain.model.Announcement
-import com.example.teamify.presentation.common.TopBar
-import com.example.teamify.presentation.screens.homeScreen.AnnouncementItem
 import com.example.teamify.ui.theme.AppTheme
 import java.time.LocalDate
 
@@ -67,7 +60,6 @@ import java.time.LocalDate
 fun AnnouncementScreen(
     state: AnnouncementUiState,
     onAddAnnouncement: (String, String, String) -> Unit,
-    onBackClick: () -> Unit = { },
     onRemove: (Announcement) -> Unit = { }
 ) {
 

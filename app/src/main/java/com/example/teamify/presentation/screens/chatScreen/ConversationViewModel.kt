@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.teamify.domain.repository.AuthRepository
 import com.example.teamify.domain.repository.ChatRepository
-import com.example.teamify.domain.repository.FriendsRepository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject

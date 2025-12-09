@@ -145,7 +145,6 @@ fun Navigation(
                 onAddAnnouncement = { title, content, priority ->
                     viewModel.addAnnouncement(title, content, priority)
                 },
-                onBackClick = { navController.popBackStack() },
                 onRemove = { viewModel.deleteAnnouncement(it.id) }
             )
         }

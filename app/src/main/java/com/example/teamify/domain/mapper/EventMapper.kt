@@ -3,8 +3,6 @@ package com.example.teamify.domain.mapper
 import com.example.teamify.domain.model.EventDto
 import com.example.teamify.domain.model.Event
 import java.time.Instant
-import java.time.LocalDate
-import java.time.LocalDateTime
 import java.time.ZoneId
 
 fun EventDto.toDomain(): Event = Event (

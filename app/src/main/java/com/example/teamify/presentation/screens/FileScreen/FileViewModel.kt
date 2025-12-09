@@ -25,7 +25,7 @@ class FileViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            val files = fileRepository.getAllFiles().collect { files ->
+            fileRepository.getAllFiles().collect { files ->
                 _state.update {
                     it.copy(files = files)
                 }

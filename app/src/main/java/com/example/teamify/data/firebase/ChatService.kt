@@ -1,7 +1,6 @@
 package com.example.teamify.data.firebase
 
 import com.example.teamify.domain.model.Chat
-import com.example.teamify.domain.model.ChatDto
 import com.example.teamify.domain.model.Message
 import com.example.teamify.domain.model.User
 import kotlinx.coroutines.flow.Flow

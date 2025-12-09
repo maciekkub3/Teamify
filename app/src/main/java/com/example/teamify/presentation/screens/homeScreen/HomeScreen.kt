@@ -54,8 +54,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -99,7 +97,6 @@ fun HomeScreen(
     var errorMessage by remember { mutableStateOf<String?>(null) }
     val coroutineScope = rememberCoroutineScope()
 
-    val context = LocalContext.current
 
 
     val filePickerLauncher = rememberLauncherForActivityResult(
@@ -365,9 +362,6 @@ private fun priorityColor(priority: String): Color {
 @Composable
 fun AnnouncementItem(announcement: Announcement) {
 
-    val priorityBg = priorityColor(announcement.priority)
-
-
     Column(modifier = Modifier.padding(14.dp)) {
 
         Row(
@@ -477,32 +471,6 @@ fun EventDateTimeDisplay(event: Event?) {
     )
 }
 
-
-@Composable
-fun InfoCard(label: String, value: String, modifier: Modifier = Modifier) {
-    Card(
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
-        modifier = modifier
-            .height(80.dp)
-    ) {
-        Column(
-            modifier = Modifier
-                .padding(12.dp),
-            verticalArrangement = Arrangement.Center
-        ) {
-            Text(
-                text = label,
-                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium)
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = value,
-                style = MaterialTheme.typography.bodyMedium
-            )
-        }
-    }
-}
 
 fun getFileIcon(fileType: String): Pair<ImageVector, Color> {
     return when {

@@ -6,14 +6,12 @@ import com.example.teamify.domain.model.EventDto
 import com.example.teamify.domain.repository.CalendarRepository
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.Query.Direction
 import jakarta.inject.Inject
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
-import java.time.LocalDate
 
 class CalendarRepositoryImpl @Inject constructor(
     private val firestore: FirebaseFirestore

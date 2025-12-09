@@ -8,7 +8,6 @@ import com.example.teamify.data.model.UserInfo
 import com.example.teamify.data.model.UserRole
 import com.example.teamify.data.model.exception.AuthException
 import com.example.teamify.domain.repository.AuthRepository
-import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

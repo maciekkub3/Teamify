@@ -2,8 +2,6 @@ package com.example.teamify.presentation.screens.chatScreen
 
 import com.example.teamify.data.model.User
 import com.example.teamify.data.model.UserRole
-import com.google.firebase.Timestamp
-import java.time.LocalDate
 import java.time.LocalDateTime
 
 data class ConversationUiState(

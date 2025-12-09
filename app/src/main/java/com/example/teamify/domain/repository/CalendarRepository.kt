@@ -1,7 +1,6 @@
 package com.example.teamify.domain.repository
 
 import com.example.teamify.domain.model.Event
-import com.example.teamify.domain.model.EventDto
 import com.google.firebase.Timestamp
 import kotlinx.coroutines.flow.Flow
 

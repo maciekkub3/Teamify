@@ -2,7 +2,6 @@ package com.example.teamify.presentation.screens.calendarScreen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.teamify.data.model.UserInfo
 import com.example.teamify.domain.repository.AuthRepository
 import com.example.teamify.domain.repository.CalendarRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -16,7 +15,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CalendarViewModel @Inject constructor(
-    private val authRepository: AuthRepository,
     private val calendarRepository: CalendarRepository
     ) : ViewModel() {
 
