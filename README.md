@@ -60,20 +60,3 @@ Testing: JUnit5, Coroutines testing
 
 Architecture: MVVM + Clean Architecture + Repository & Service patterns
 
-Screenshots 📸
-
-Add screenshots here showing messages 💬, announcements 📢, calendar events 📅, files 📁, and light/dark mode 🌗.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
